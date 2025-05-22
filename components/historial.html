@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial de Transacciones - Monedero Virtual</title>
+    <link rel="stylesheet" href="../styles/dashboards.css"> <link rel="stylesheet" href="../styles/historial.css"> </head>
+<body>
+    <header>
+        <h1>HISTORIAL DE TRANSACCIONES</h1>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="transactions.html">Transacciones</a></li>
+                <li><a href="historial.html">Historial</a></li>
+                <li><a href="notificaciones.html">Notificaciones</a></li>
+                <li><a href="configuracion.html">Configuración</a></li>
+                <li><a href="analisisGasto.html" class="active">Análisis de Gasto</a></li>
+            </ul>
+        </nav>
+        <button id="cerrarSesionBtn" class="header-button">Cerrar Sesión</button>
+    </header>
+
+    <main>
+        <section class="historial-card">
+            <h2>Todas tus Transacciones</h2>
+            <div class="table-container">
+                <table id="historialTable">
+                    <thead>
+                        <tr>
+                            <th>ID Transacción</th>
+                            <th>Tipo</th>
+                            <th>Monto</th>
+                            <th>Fecha</th>
+                            <th>Origen/Destino</th>
+                            <th>Tipo Cuenta</th>
+                            <th>Método Pago</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="7" class="no-transactions-message">No hay transacciones registradas.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div id="mensajeHistorial" class="message-area"></div>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2025 Monedero Virtual - Todos los derechos reservados.</p>
+    </footer>
+
+    <script type="module" src="../js/ui/logout.js"></script>
+    <script type="module" src="../js/ui/historial.js"></script> </body>
+</html>

@@ -1,0 +1,91 @@
+/* Puedes copiar algunos estilos base de dashboard.css si quieres un look similar para la sección */
+.historial-card {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 2.5rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(12px);
+    margin-top: 2rem;
+    width: 90%;
+    max-width: 1000px; /* Un poco más ancha para la tabla de historial */
+    text-align: center;
+    color: #fff;
+    overflow-x: auto; /* Permite scroll horizontal en pantallas pequeñas */
+}
+
+.historial-card h2 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    color: #fff;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.historial-card .message-area {
+    margin-top: 20px;
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+.historial-card .message-area.error {
+    color: #ff6b6b;
+}
+
+.historial-card .message-area.success {
+    color: #6aff6b;
+}
+
+/* Estilos de la tabla */
+.table-container {
+    overflow-x: auto; /* Esto es importante para que la tabla sea scrollable horizontalmente en móviles */
+    width: 100%;
+}
+
+#historialTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    min-width: 600px; /* Asegura un ancho mínimo para evitar que se comprima demasiado */
+}
+
+#historialTable th,
+#historialTable td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 0.95rem;
+    white-space: nowrap; /* Evita que el texto se rompa en varias líneas */
+}
+
+#historialTable th {
+    background: rgba(255, 255, 255, 0.2);
+    font-weight: bold;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+#historialTable tbody tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.05); /* Rayas alternas para mejor legibilidad */
+}
+
+#historialTable tbody tr:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transition: background-color 0.3s ease;
+}
+
+#historialTable .no-transactions-message {
+    text-align: center;
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.7);
+    padding: 20px;
+}
+
+/* Colores para tipos de transacción (opcional, para visualización) */
+#historialTable .type-deposito { color: #8bc34a; /* Verde */ }
+#historialTable .type-retiro { color: #f44336; /* Rojo */ }
+#historialTable .type-transferencia { color: #2196f3; /* Azul */ }
+#historialTable .type-recepcion { color: #ffeb3b; /* Amarillo */ }

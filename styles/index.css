@@ -1,0 +1,158 @@
+/* Asegúrate de que el body tenga estas propiedades si quieres un diseño de página completa */
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #2e3192, #1bffff); /* Mismo degradado del dashboard */
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    color: #fff;
+    margin: 0;
+    padding: 0;
+    /* Para centrar el contenido principal vertical y horizontalmente */
+    display: flex;
+    flex-direction: column; /* Apila los elementos verticalmente */
+    align-items: center;    /* Centra horizontalmente los elementos hijos */
+    justify-content: center; /* Centra verticalmente los elementos hijos */
+    min-height: 100vh;      /* Asegura que el body ocupe toda la altura de la ventana */
+}
+
+/* Animación del fondo (repite la del dashboard si ya la tienes en un global.css) */
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Estilo para el encabezado en index.html */
+header {
+    width: 100%;
+    padding: 1.5rem 2rem;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    /*display: flex;*/
+    justify-content: center; /* Centra el título si no hay nav visible */
+    align-items: center;
+    box-sizing: border-box;
+    /* Si tienes una nav dentro de los divs de header-authenticated/unauthenticated,
+       esos divs deberían tener un display: flex o similar para distribuir sus propios contenidos */
+}
+
+header h1 {
+    font-size: 2.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #fff;
+    margin: 0;
+}
+
+/* Contenedor para la navegación (oculta/muestra) */
+#header-unauthenticated,
+#header-authenticated {
+    width: 100%; /* Asegura que el contenedor de la nav ocupe el ancho */
+    display: flex; /* Para que la nav dentro de ellos se alinee correctamente */
+    justify-content: center; /* Centra la nav */
+    align-items: center;
+}
+
+/* Estilos de la navegación (si la tienes en el header-unauthenticated) */
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex; /* Para poner los ítems de la lista en fila */
+    gap: 20px; /* Espacio entre los ítems */
+}
+
+nav a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 500;
+    padding: 8px 15px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+}
+
+nav a:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+
+/* Estilo para la sección principal de bienvenida */
+.main.bienvenida {
+    display: flex; /* Asegura que la sección principal use flexbox */
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    flex-grow: 1; /* Hace que esta sección ocupe el espacio disponible */
+    padding: 2rem;
+    box-sizing: border-box;
+    max-width: 800px; /* Ancho máximo para el contenido */
+    width: 90%;
+}
+
+.hero h2 {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.hero p {
+    font-size: 1.4rem;
+    margin-bottom: 2.5rem;
+    line-height: 1.6;
+    color: #e0e0e0;
+}
+
+.botones button {
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #fff;
+    background: linear-gradient(135deg, #e44d26, #f16529); /* Degradado naranja */
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    margin: 0 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.botones button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Pie de página */
+footer {
+    text-align: center;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.2);
+    color: #bbb;
+    font-size: 0.9rem;
+    width: 100%;
+    margin-top: auto; /* Para que el footer se pegue al final */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 2rem;
+    }
+
+    .hero h2 {
+        font-size: 2.5rem;
+    }
+
+    .hero p {
+        font-size: 1.1rem;
+    }
+
+    .botones button {
+        padding: 12px 25px;
+        font-size: 1rem;
+        margin: 0 5px;
+    }
+}

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Monedero Virtual</title>
+    <link rel="stylesheet" href="../styles/dashboards.css">
+</head>
+<body>
+    <header>
+        <h1>DASHBOARD</h1>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="transactions.html">Transacciones</a></li>
+                <li><a href="historial.html">Historial</a></li>
+                <li><a href="notificaciones.html">Notificaciones</a></li>
+                <li><a href="configuracion.html">Configuración</a></li>
+                <li><a href="analisisGasto.html" class="active">Análisis de Gasto</a></li>
+            </ul>
+        </nav>
+        <button id="cerrarSesionBtn" class="header-button">Cerrar Sesión</button>
+    </header>
+
+    <main>
+        <section class="info-cliente-card">
+            <h2>INFORMACIÓN DEL CLIENTE</h2>
+            <p>Saldo: <span id="saldoCliente">0.00</span></p>
+            <p>Puntos: <span id="puntosCliente">0</span></p>
+            <p>Rango: <span id="rangoCliente">Bronce</span></p>
+        </section>
+
+
+        <section class="points-info-card">
+            <h2>SISTEMA DE PUNTOS Y RANGOS</h2>
+            <p>¡Gana puntos con tus transacciones y desbloquea beneficios exclusivos!</p>
+            
+            <h3>¿Cómo ganar puntos?</h3>
+            <ul>
+                <li>**Depósitos:** 1 punto por cada 100 unidades depositadas.</li>
+                <li>**Retiros:** 2 puntos por cada 100 unidades retiradas.</li>
+                <li>**Transferencias (al que envía):** 3 puntos por cada 100 unidades transferidas.</li>
+            </ul>
+
+            <h3>Nuestros Rangos de Cliente:</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rango</th>
+                        <th>Puntos Requeridos</th>
+                        <th>Beneficios</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Bronce</td>
+                        <td>0 - 500 puntos</td>
+                        <td>Acceso básico al monedero.</td>
+                    </tr>
+                    <tr>
+                        <td>Plata</td>
+                        <td>501 - 1000 puntos</td>
+                        <td>Pronto... ¡Beneficios adicionales en camino!</td>
+                    </tr>
+                    <tr>
+                        <td>Oro</td>
+                        <td>1001 - 5000 puntos</td>
+                        <td>Pronto... ¡Más beneficios te esperan!</td>
+                    </tr>
+                    <tr>
+                        <td>Platino</td>
+                        <td>Más de 5000 puntos</td>
+                        <td>Pronto... ¡Los mejores privilegios!</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p class="canje-note">Mantente atento a la sección de notificaciones para conocer cómo canjear tus puntos por descuentos y privilegios.</p>
+        </section>
+        </main>
+
+    <footer>
+        <p>© 2025 Monedero Virtual - Todos los derechos reservados.</p>
+    </footer>
+
+    <script type="module" src="../js/ui/logout.js"></script>
+    <script type="module" src="../js/ui/dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,381 @@
+/* 🎨 Estilo general para la página de Dashboard */
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #2e3192, #1bffff); /* Un degradado fresco */
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite; /* Animación de fondo */
+    color: #fff;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* Alinea los elementos al inicio */
+    align-items: center;
+    min-height: 100vh;
+}
+
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* 📌 Header */
+header {
+    width: 100%;
+    padding: 1.5rem 2rem;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    /* justify-content: space-between; <-- ORIGINALMENTE ESTABA SOLO ESTO */
+    justify-content: space-between; /* Alinea título/nav/botón */
+    align-items: center;
+    margin-bottom: 3rem; /* Espacio debajo del header */
+    box-sizing: border-box; /* Incluye padding en el ancho */
+}
+
+header h1 {
+    font-size: 2.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #fff;
+    margin: 0; /* Elimina margen por defecto del h1 */
+}
+
+/* 🔘 Estilo para el botón de Cerrar Sesión en el header */
+.header-button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #fff;
+    background: linear-gradient(135deg, #e44d26, #f16529); /* Degradado para el botón */
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.header-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 300%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: skewX(-45deg);
+    transition: all 0.5s ease;
+}
+
+.header-button:hover::before {
+    left: 100%;
+}
+
+.header-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.4);
+}
+
+/* 📝 Tarjeta de Información del Cliente */
+.info-cliente-card {
+    background: rgba(255, 255, 255, 0.15); /* Fondo semi-transparente */
+    padding: 2.5rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(12px); /* Efecto de cristal esmerilado */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+    margin-bottom: 2rem; /* Espacio debajo de la tarjeta */
+}
+
+.info-cliente-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+}
+
+.info-cliente-card h2 {
+    font-size: 2rem;
+    color: #ffeb3b; /* Amarillo brillante para el título */
+    margin-bottom: 1.5rem;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.info-cliente-card p {
+    font-size: 1.4rem;
+    color: #e0e0e0;
+    margin-bottom: 1rem;
+    font-weight: 500;
+}
+
+.info-cliente-card span {
+    font-weight: bold;
+    color: #fff; /* Blanco puro para los valores */
+    font-size: 1.5rem;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Colores específicos para Saldo y Puntos para hacerlos más visibles */
+#saldoCliente {
+    color: #4CAF50; /* Verde para saldo */
+}
+
+#puntosCliente {
+    color: #2196F3; /* Azul para puntos */
+}
+
+#rangoCliente {
+    color: #ffeb3b; /* Amarillo para rango */
+}
+
+/* 🚀 Estilos para la barra de navegación principal (APLICAR SIEMPRE) */
+.main-nav {
+    flex-grow: 1; /* Hace que la nav ocupe el espacio central en pantallas grandes */
+    text-align: center; /* Centra los elementos de la lista */
+    /* Añadimos un margin para separarla del título y del botón si es necesario */
+    margin: 0 20px;
+}
+
+.main-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex; /* Para poner los ítems en una fila */
+    justify-content: center; /* Centra los ítems horizontalmente */
+    gap: 30px; /* Espacio entre los ítems de la navegación */
+}
+
+.main-nav a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 600; /* Un poco más de peso para los enlaces de navegación */
+    padding: 10px 15px;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    border: 1px solid transparent; /* Borde transparente para transición */
+}
+
+.main-nav a:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px);
+}
+
+/* 🦶 Footer */
+footer {
+    text-align: center;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.2);
+    color: #bbb;
+    font-size: 0.9rem;
+    width: 100%;
+    margin-top: auto; /* Empuja el footer hacia abajo */
+}
+
+/* 🌟 Responsividad */
+@media (max-width: 768px) {
+    header {
+        flex-direction: column; /* Apila el título, nav y botón */
+        gap: 1rem;
+        padding: 1rem;
+    }
+
+    header h1 {
+        font-size: 2rem;
+        margin-bottom: 0.5rem; /* Espacio entre el título y la nav */
+    }
+
+    .main-nav {
+        margin: 1rem 0; /* Ajuste el margen en pantallas pequeñas */
+    }
+
+    .main-nav ul {
+        flex-direction: column; /* Apila los ítems de la nav en pantallas pequeñas */
+        gap: 10px;
+        width: 100%; /* Ocupa todo el ancho disponible */
+    }
+
+    .main-nav a {
+        padding: 8px 12px;
+        font-size: 1rem;
+        width: 100%; /* Hace que los enlaces de la nav ocupen el ancho completo */
+        box-sizing: border-box; /* Incluye padding en el ancho */
+    }
+
+    .header-button {
+        font-size: 0.9rem;
+        padding: 8px 15px;
+        margin-top: 1rem; /* Espacio entre la nav y el botón de cerrar sesión */
+    }
+
+    .info-cliente-card {
+        padding: 1.5rem;
+        width: 95%;
+    }
+
+    .info-cliente-card h2 {
+        font-size: 1.5rem;
+    }
+
+    .info-cliente-card p {
+        font-size: 1.1rem;
+    }
+    .info-cliente-card span {
+        font-size: 1.2rem;
+    }
+
+    /* Nueva sección para información de Puntos y Rangos */
+.points-info-card {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 2.5rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(12px);
+    margin-top: 2rem; /* Espacio entre la card de cliente y esta nueva */
+    width: 90%;
+    max-width: 800px; /* Un poco más ancha para la tabla */
+    text-align: center;
+    color: #fff;
+}
+
+.points-info-card h2 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    color: #fff;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.points-info-card h3 {
+    font-size: 1.4rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    color: #ffeb3b; /* Color de acento para los subtítulos */
+}
+
+.points-info-card p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.points-info-card ul {
+    list-style: none; /* Quitar viñetas predeterminadas */
+    padding: 0;
+    margin: 0 auto 2rem auto;
+    max-width: 500px;
+    text-align: left;
+}
+
+.points-info-card ul li {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 10px 15px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.points-info-card ul li:last-child {
+    margin-bottom: 0;
+}
+
+.points-info-card ul li strong {
+    color: #00f2fe; /* Color de acento para los tipos de transacción */
+    margin-right: 8px;
+}
+
+.points-info-card table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 2rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden; /* Para que los border-radius se apliquen a los thead/tbody */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.points-info-card th,
+.points-info-card td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 0.95rem;
+}
+
+.points-info-card th {
+    background: rgba(255, 255, 255, 0.2);
+    font-weight: bold;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.points-info-card tbody tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.05); /* Rayas alternas para mejor legibilidad */
+}
+
+.points-info-card tbody tr:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transition: background-color 0.3s ease;
+}
+
+.canje-note {
+    font-size: 0.9rem;
+    margin-top: 2rem;
+    opacity: 0.8;
+}
+
+/* Responsividad para la tabla */
+@media (max-width: 600px) {
+    .points-info-card table,
+    .points-info-card thead,
+    .points-info-card tbody,
+    .points-info-card th,
+    .points-info-card td,
+    .points-info-card tr {
+        display: block;
+    }
+
+    .points-info-card thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+
+    .points-info-card tr {
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        margin-bottom: 1rem;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .points-info-card td {
+        border: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        position: relative;
+        padding-left: 50%; /* Espacio para la etiqueta */
+        text-align: right;
+    }
+
+    .points-info-card td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        width: 45%;
+        padding-left: 15px;
+        font-weight: bold;
+        text-align: left;
+        color: #ffeb3b;
+    }
+}
+
+}

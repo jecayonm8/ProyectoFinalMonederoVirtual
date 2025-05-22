@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Transacciones - Monedero Virtual</title>
+    <link rel="stylesheet" href="../styles/dashboards.css">
+    <link rel="stylesheet" href="../styles/transactions.css">
+</head>
+<body>
+    <header>
+        <h1>TRANSACCIONES</h1>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="transactions.html">Transacciones</a></li>
+                <li><a href="historial.html">Historial</a></li>
+                <li><a href="notificaciones.html">Notificaciones</a></li>
+                <li><a href="configuracion.html">Configuración</a></li>
+                <li><a href="analisisGasto.html" class="active">Análisis de Gasto</a></li>
+            </ul>
+        </nav>
+        <button id="cerrarSesionBtn" class="header-button">Cerrar Sesión</button>
+    </header>
+
+    <main>
+        <section class="transaction-card">
+            <h2>Realizar Operación</h2>
+            <form id="transaction-form">
+                <div class="form-group">
+                    <label for="tipoOperacion">Tipo de Operación:</label>
+                    <select id="tipoOperacion" required>
+                        <option value="">Seleccione...</option>
+                        <option value="deposito">Depósito</option>
+                        <option value="retiro">Retiro</option>
+                        <option value="transferencia">Transferencia</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="tipo-cuenta-group" style="display: none;">
+                    <label for="tipoCuenta">Tipo de Cuenta:</label>
+                    <select id="tipoCuenta">
+                        <option value="ahorros">Ahorros</option>
+                        <option value="nomina">Nómina</option>
+                        <option value="corriente">Corriente</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="metodo-pago-group" style="display: none;">
+                    <label for="metodoPago">Método de Pago:</label>
+                    <select id="metodoPago">
+                        <option value="tarjeta_credito">Tarjeta de Crédito</option>
+                        <option value="transferencia_bancaria">Transferencia Bancaria</option>
+                        <option value="efectivo">Efectivo</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="monto-group">
+                    <label for="monto">Monto:</label>
+                    <input type="number" id="monto" min="0.01" step="0.01" required>
+                </div>
+
+                <div class="form-group" id="cliente-destino-group" style="display: none;">
+                    <label for="idClienteDestino">ID Cliente Destino:</label>
+                    <input type="text" id="idClienteDestino">
+                </div>
+
+                <div class="form-group" id="categoria-group" style="display: none;">
+                    <label for="categoriaGasto">Categoría de Gasto:</label>
+                    <input type="text" id="categoriaGasto" placeholder="Ej: Alimentación, Transporte, Entretenimiento">
+                </div>
+                <button type="submit" class="submit-button">Realizar Operación</button>
+            </form>
+            <div id="mensajeTransaccion" class="message-area"></div>
+        </section>
+
+        <section class="transaction-card" style="margin-top: 2rem;">
+            <h2>Programar Transacción Recurrente</h2>
+            <form id="programar-transaction-form">
+                <div class="form-group">
+                    <label for="tipoOperacionProgramada">Tipo de Operación:</label>
+                    <select id="tipoOperacionProgramada" required>
+                        <option value="">Seleccione...</option>
+                        <option value="deposito">Depósito</option>
+                        <option value="retiro">Retiro</option>
+                        <option value="transferencia">Transferencia</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="monto-programado-group">
+                    <label for="montoProgramado">Monto:</label>
+                    <input type="number" id="montoProgramado" min="0.01" step="0.01" required>
+                </div>
+
+                <div class="form-group" id="cliente-destino-programado-group" style="display: none;">
+                    <label for="idClienteDestinoProgramado">ID Cliente Destino:</label>
+                    <input type="text" id="idClienteDestinoProgramado">
+                </div>
+
+                <div class="form-group">
+                    <label for="fechaEjecucion">Fecha y Hora de Primera Ejecución:</label>
+                    <input type="datetime-local" id="fechaEjecucion" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="frecuencia">Frecuencia:</label>
+                    <select id="frecuencia" required>
+                        <option value="unica">Una vez</option>
+                        <option value="diaria">Diaria</option>
+                        <option value="semanal">Semanal</option>
+                        <option value="mensual">Mensual</option>
+                        <option value="anual">Anual</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="tipo-cuenta-programada-group" style="display: none;">
+                    <label for="tipoCuentaProgramada">Tipo de Cuenta:</label>
+                    <select id="tipoCuentaProgramada">
+                        <option value="ahorros">Ahorros</option>
+                        <option value="nomina">Nómina</option>
+                        <option value="corriente">Corriente</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="metodo-pago-programado-group" style="display: none;">
+                    <label for="metodoPagoProgramado">Método de Pago:</label>
+                    <select id="metodoPagoProgramado">
+                        <option value="tarjeta_credito">Tarjeta de Crédito</option>
+                        <option value="transferencia_bancaria">Transferencia Bancaria</option>
+                        <option value="efectivo">Efectivo</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="categoria-programada-group" style="display: none;">
+                    <label for="categoriaGastoProgramada">Categoría de Gasto:</label>
+                    <input type="text" id="categoriaGastoProgramada" placeholder="Ej: Pago de renta, Ahorro">
+                </div>
+                <button type="submit" class="submit-button">Programar Transacción</button>
+            </form>
+            <div id="mensajeProgramacion" class="message-area"></div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>© 2025 Monedero Virtual - Todos los derechos reservados.</p>
+    </footer>
+
+    <script type="module" src="../js/ui/logout.js"></script>
+    <script type="module" src="../js/ui/transactions.js"></script>
+</body>
+</html>

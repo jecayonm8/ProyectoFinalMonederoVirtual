@@ -1,0 +1,98 @@
+/* Globales */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f5f7fa;
+    color: #333;
+}
+
+header {
+    background-color: #3f51b5;
+    color: white;
+    padding: 1rem;
+    text-align: center;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 10px;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+}
+
+nav ul li a:hover {
+    background-color: #283593;
+}
+
+main {
+    padding: 2rem;
+    max-width: 800px;
+    margin: auto;
+}
+
+/* Botones */
+button {
+    background-color: #ff6f61;
+    border: none;
+    color: white;
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: 0.3s;
+}
+
+button:hover {
+    background-color: #d15249;
+}
+
+/* Inputs y Formularios */
+input, select {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: white;
+    padding: 1rem;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+:root {
+  --primary-color: #3f51b5;
+  --secondary-color: #ff6f61;
+  --text-color: #fff;
+  --card-bg: rgba(255, 255, 255, 0.2);
+  --blur-effect: blur(15px);
+  /* ... otras variables ... */
+}
+
+body {
+  background: linear-gradient(120deg, var(--primary-color), #1e88e5);
+  color: var(--text-color);
+}
+
+#info-cliente {
+  background: var(--card-bg);
+  backdrop-filter: var(--blur-effect);
+}

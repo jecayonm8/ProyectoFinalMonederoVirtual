@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Monedero Virtual</title>
+    <link rel="stylesheet" href="styles/global.css">
+    <link rel="stylesheet" href="styles/index.css"> </head>
+<body>
+    <header>
+        <h1>💰 Monedero Virtual JJB</h1>
+        
+        <div id="header-unauthenticated">
+            <nav>
+                <ul>
+                    </ul>
+            </nav>
+        </div>
+
+        <div id="header-authenticated" style="display: none;">
+            <nav>
+                <ul>
+                    <li><a href="components/dashboard.html">Dashboard</a></li>
+                    <li><a href="components/transactions.html">Transacciones</a></li>
+                    <li><a href="components/historial.html">Historial</a></li>
+                    <li><a href="components/notifications.html">Notificaciones</a></li>
+                    <li><a href="components/configuracion.html">Configuración</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="bienvenida">
+        <section class="hero">
+            <h2>Bienvenido a tu Monedero Virtual</h2>
+            <p>Administra tu dinero, gana puntos y disfruta beneficios exclusivos.</p>
+            <div class="botones">
+                <button onclick="window.location.href='components/registro.html'">Registrarse</button>
+                <button onclick="window.location.href='components/login.html'">Iniciar Sesión</button>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2025 Monedero Virtual - Todos los derechos reservados.</p>
+    </footer>
+
+    <script type="module" src="js/ui/index.js"></script>
+</body>
+</html>

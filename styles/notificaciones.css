@@ -1,0 +1,116 @@
+/* styles/notificaciones.css */
+
+.notifications-container {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    max-width: 800px;
+    margin: 2rem auto;
+}
+
+.notifications-container h2 {
+    color: #34495e;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.notifications-actions {
+    text-align: right;
+    margin-bottom: 1rem;
+}
+
+.notifications-actions button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 0.7rem 1.2rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
+}
+
+.notifications-actions button:hover {
+    background-color: #2980b9;
+}
+
+.notifications-list {
+    list-style: none;
+    padding: 0;
+}
+
+.notification-item {
+    background-color: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    margin-bottom: 0.8rem;
+    padding: 1rem 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.notification-item.unread {
+    background-color: #e8f0fe; /* Un color más claro para no leídas */
+    border-color: #a7c7ed;
+    font-weight: bold;
+}
+
+.notification-item.unread .notification-message {
+    color: #2c3e50;
+}
+
+.notification-item.read {
+    background-color: #f0f0f0; /* Un color más oscuro para leídas */
+    color: #7f8c8d;
+    opacity: 0.8;
+}
+
+.notification-content {
+    flex-grow: 1;
+}
+
+.notification-message {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.4;
+}
+
+.notification-meta {
+    font-size: 0.8rem;
+    color: #95a5a6;
+    margin-top: 0.4rem;
+}
+
+.notification-actions {
+    margin-left: 1rem;
+}
+
+.notification-actions button {
+    background: none;
+    border: 1px solid #bdc3c7;
+    color: #34495e;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.notification-actions button:hover {
+    background-color: #ecf0f1;
+    color: #2c3e50;
+}
+
+.notification-actions button.read-btn {
+    background-color: #2ecc71; /* Verde para marcar como leída */
+    color: white;
+    border-color: #27ae60;
+}
+
+.notification-actions button.read-btn:hover {
+    background-color: #27ae60;
+}

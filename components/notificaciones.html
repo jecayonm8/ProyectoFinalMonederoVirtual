@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notificaciones - Monedero Virtual</title>
+    <link rel="stylesheet" href="../styles/dashboards.css">
+    <link rel="stylesheet" href="../styles/notificaciones.css"> </head>
+<body>
+    <header>
+        <h1>NOTIFICACIONES</h1>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="transactions.html">Transacciones</a></li>
+                <li><a href="historial.html">Historial</a></li>
+                <li><a href="notificaciones.html" class="active">Notificaciones</a></li>
+                <li><a href="configuracion.html">Configuración</a></li>
+                <li><a href="analisisGasto.html">Análisis de Gasto</a></li>
+            </ul>
+        </nav>
+        <button id="cerrarSesionBtn" class="header-button">Cerrar Sesión</button>
+    </header>
+
+    <main>
+        <section class="notifications-container">
+            <h2>Tus Notificaciones</h2>
+            <div id="clienteActualInfo">
+                <p>Cargando información del cliente...</p>
+            </div>
+
+            <div class="notifications-actions">
+                <button id="marcarTodasLeidasBtn">Marcar todas como leídas</button>
+            </div>
+
+            <ul id="notificacionesList" class="notifications-list">
+                <li>No hay notificaciones.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2025 Monedero Virtual - Todos los derechos reservados.</p>
+    </footer>
+
+    <script type="module" src="../js/ui/logout.js"></script>
+    <script type="module" src="../js/ui/notificaciones.js"></script> </body>
+</html>

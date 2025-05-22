@@ -1,0 +1,127 @@
+/* Heredamos estilos del dashboard.css para el body, header, footer */
+
+/* Estilos para la tarjeta de transacciones */
+.transaction-card {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 2.5rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(12px);
+    max-width: 600px;
+    width: 90%;
+    text-align: center;
+    margin-top: 3rem; /* Margen superior para separarlo del header */
+    margin-bottom: 2rem;
+}
+
+.transaction-card h2 {
+    font-size: 2.2rem;
+    color: #ffeb3b; /* Amarillo brillante para el título */
+    margin-bottom: 2rem;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Estilos para los grupos de formulario (label e input) */
+.form-group {
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: #e0e0e0;
+}
+
+.form-group input[type="number"],
+.form-group input[type="text"],
+.form-group select {
+    width: calc(100% - 20px); /* Ajustar el ancho para el padding */
+    padding: 12px 10px;
+    border: none;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    font-size: 1rem;
+    outline: none;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-group input[type="number"]:focus,
+.form-group input[type="text"]:focus,
+.form-group select:focus {
+    background-color: rgba(255, 255, 255, 0.3);
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3), 0 0 0 3px rgba(255, 255, 255, 0.4);
+}
+
+/* Estilo para el botón de enviar (Realizar Operación) */
+.submit-button {
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #fff;
+    background: linear-gradient(135deg, #4CAF50, #8BC34A); /* Degradado verde */
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    margin-top: 1.5rem;
+}
+
+.submit-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Área de mensajes */
+.message-area {
+    margin-top: 1.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #fff;
+}
+
+/* Colores para mensajes de éxito/error */
+.message-area.success {
+    color: #8BC34A; /* Verde */
+}
+
+.message-area.error {
+    color: #FF5252; /* Rojo */
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+    .transaction-card {
+        padding: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .transaction-card h2 {
+        font-size: 1.8rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        font-size: 1rem;
+    }
+
+    .form-group input,
+    .form-group select {
+        font-size: 0.9rem;
+        padding: 10px;
+    }
+
+    .submit-button {
+        padding: 12px 25px;
+        font-size: 1rem;
+    }
+
+    .message-area {
+        font-size: 1rem;
+    }
+}

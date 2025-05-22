@@ -1,0 +1,179 @@
+/* 🎨 Estilo general para la página de Login */
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #a770ef, #cf8bf3, #f5a0e3); /* Degradado suave */
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite; /* Animación más lenta */
+    color: #fff;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column; /* Para alinear el header y el main */
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* 📌 Header */
+header {
+    width: 100%;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    text-align: center;
+    margin-bottom: 2rem; /* Espacio entre header y main */
+}
+
+header h1 {
+    font-size: 2.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #fff;
+}
+
+header a {
+    color: #ffeb3b; /* Color amarillo para el enlace de inicio */
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.1rem;
+    transition: color 0.3s ease;
+}
+
+header a:hover {
+    color: #fff;
+}
+
+/* 📝 Formulario de Login */
+/* Asegúrate de que el ID de tu formulario de login en login.html sea "#loginForm" */
+#loginForm, #form-login { /* Si tu id es "form-login", ajústalo. Asegúrate de que este sea el ID correcto */
+    max-width: 400px;
+    width: 90%;
+    background: rgba(255, 255, 255, 0.15); /* Fondo semi-transparente */
+    padding: 2.5rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(12px); /* Efecto de cristal esmerilado */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-align: center;
+}
+
+#loginForm:hover, #form-login:hover { /* Asegúrate de que este sea el ID correcto */
+    transform: translateY(-8px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* 🏷️ Etiquetas */
+label {
+    font-weight: bold;
+    color: #fff; /* Color blanco para las etiquetas */
+    display: block;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+    text-align: left;
+}
+
+/* 🖊️ Campos de entrada */
+/* MODIFICACIÓN CLAVE AQUÍ: AÑADIR input[type="password"] */
+input[type="text"],
+input[type="password"] { /* <-- ¡Añadido este selector! */
+    width: calc(100% - 24px); /* Ancho completo menos padding */
+    padding: 12px;
+    margin-bottom: 20px;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.9); /* Fondo casi blanco para los inputs */
+    color: #333;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+/* MODIFICACIÓN CLAVE AQUÍ: AÑADIR input[type="password"]:focus */
+input[type="text"]:focus,
+input[type="password"]:focus { /* <-- ¡Añadido este selector! */
+    outline: none;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* 🔘 Botón de Ingresar */
+button[type="submit"] {
+    width: 100%;
+    padding: 15px;
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #fff;
+    background: linear-gradient(135deg, #ff7e5f, #feb47b); /* Degradado para el botón */
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+button[type="submit"]::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 300%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: skewX(-45deg);
+    transition: all 0.5s ease;
+}
+
+button[type="submit"]:hover::before {
+    left: 100%;
+}
+
+button[type="submit"]:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+
+/* Enlace a Registro */
+p a {
+    color: #ffeb3b; /* Color amarillo para el enlace de registro */
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+p a:hover {
+    color: #fff;
+}
+
+/* 📩 Mensaje de Login */
+/* Asegúrate de que el ID de tu div de mensaje de login en login.html sea "#mensajeLogin" */
+#mensajeLogin, #mensaje-login { /* Si tu id es "mensaje-login", ajústalo. Asegúrate de que este sea el ID correcto */
+    text-align: center;
+    margin-top: 20px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 12px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* 🌟 Responsividad */
+@media (max-width: 768px) {
+    #loginForm, #form-login { /* Asegúrate de que este sea el ID correcto */
+        padding: 2rem;
+    }
+
+    button[type="submit"] {
+        font-size: 1.1rem;
+    }
+}
