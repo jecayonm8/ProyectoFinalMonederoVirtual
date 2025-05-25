@@ -14,21 +14,17 @@ class Storage {
             const data = localStorage.getItem(NOMBRE_STORAGE_CLIENTES);
             if (data) {
                 const parsedData = JSON.parse(data);
-                // Asegurarse de que parsedData.clientes existe y es un array
                 if (parsedData && Array.isArray(parsedData.clientes)) {
                     datos.clientes = parsedData.clientes.map(c => {
-                        // C es un objeto plano, siempre lo rehidratamos a una instancia de Cliente
                         let clienteInstanciado = new Cliente(c.id, c.nombre, c.contrasena);
-                        clienteInstanciado.saldo = c.saldo || 0;
-                        clienteInstanciado.puntos = c.puntos || 0;
-                        clienteInstanciado.rango = c.rango || "Bronce";
+                        // Copiar propiedades planas, incluyendo saldo, puntos, rango
+                        Object.assign(clienteInstanciado, c); 
 
-                        // Rehidratar historialTransacciones (si no es ya un array)
+                        // Rehidratar historialTransacciones (no es necesario un deep copy si solo son objetos planos aquí)
                         clienteInstanciado.historialTransacciones = Array.isArray(c.historialTransacciones) ? c.historialTransacciones : [];
 
                         // Rehidratar PilaTransacciones
                         if (c.pilaTransaccionesReversibles && Array.isArray(c.pilaTransaccionesReversibles.transacciones)) {
-                            // Crear una nueva PilaTransacciones e insertar los elementos
                             clienteInstanciado.pilaTransaccionesReversibles = new PilaTransacciones();
                             clienteInstanciado.pilaTransaccionesReversibles.transacciones.push(...c.pilaTransaccionesReversibles.transacciones);
                         } else {
@@ -47,30 +43,35 @@ class Storage {
                         if (c.notificaciones) {
                             const rehydratedNotificaciones = ListaCircular.fromPlainObject(c.notificaciones);
                             if (rehydratedNotificaciones) {
-                                // Asegurarse de que los elementos sean instancias de Notificacion
                                 if (Array.isArray(rehydratedNotificaciones.elementos)) {
-                                    rehydratedNotificaciones.elementos = rehydratedNotificaciones.elementos.map(n => 
-                                        (n instanceof Notificacion) ? n : new Notificacion(n.mensaje, n.tipo, n.idTransaccion, n.leida)
-                                    );
+                                    rehydratedNotificaciones.elementos = rehydratedNotificaciones.elementos.map(n => {
+                                        // AQUI EL CAMBIO: Verificar si 'n' es null/undefined antes de acceder a sus propiedades
+                                        if (n === null || typeof n === 'undefined') {
+                                            return n; // Devolver el elemento tal cual (null o undefined)
+                                        }
+                                        // Asegurarse de pasar todos los parámetros, incluyendo fecha e id
+                                        return (n instanceof Notificacion) ? n : new Notificacion(n.mensaje, n.tipo, n.idTransaccion, n.leida, n.fecha, n.id);
+                                    });
                                 }
                                 clienteInstanciado.notificaciones = rehydratedNotificaciones;
                             } else {
+                                console.warn(`Fallo al rehidratar ListaCircular para cliente ${c.id}. Inicializando nueva.`);
                                 clienteInstanciado.notificaciones = new ListaCircular(); // Fallback si fromPlainObject falla
                             }
                         } else {
                             clienteInstanciado.notificaciones = new ListaCircular(); // Inicializar si no existe
                         }
 
-                        return clienteInstanciado; // Devolver la instancia de Cliente rehidratada
+                        return clienteInstanciado;
                     });
                 }
             } else {
                 datos = { clientes: [] };
             }
-            console.log("✅ Datos cargados desde localStorage.", datos.clientes); // Log para verificar
+            console.log("✅ Datos cargados desde localStorage.", datos.clientes);
         } catch (error) {
             console.error("Error al cargar los datos desde localStorage:", error);
-            datos = { clientes: [] };
+            datos = { clientes: [] }; // Resetear datos para evitar errores subsiguientes
         }
     }
 
@@ -78,19 +79,14 @@ class Storage {
         try {
             const datosParaGuardar = {
                 clientes: datos.clientes.map(cliente => {
-                    // Aseguramos que 'cliente' es una instancia de Cliente con métodos
-                    // antes de intentar aplanar. Si no lo es, es un error lógico en cómo se añadió.
                     if (!(cliente instanceof Cliente)) {
                         console.error("CRÍTICO: Intentando guardar un objeto que NO ES UNA INSTANCIA de Cliente:", cliente);
-                        // Esto no debería ocurrir si ClienteService y Storage.agregarCliente funcionan bien
-                        // Podrías lanzar un error o devolver un objeto plano vacío para evitar un crash total.
-                        return {}; // Devuelve un objeto vacío o maneja el error apropiadamente
+                        return {};
                     }
 
                     const clientePlano = {};
-                    for (const key in cliente) { // Iterar sobre las propiedades de la instancia de Cliente
+                    for (const key in cliente) {
                         if (Object.prototype.hasOwnProperty.call(cliente, key)) {
-                            // Excluir propiedades que son instancias de clases para aplanarlas manualmente
                             if (key !== 'pilaTransaccionesReversibles' &&
                                 key !== 'transaccionesProgramadas' &&
                                 key !== 'notificaciones') {
@@ -99,13 +95,12 @@ class Storage {
                         }
                     }
 
-                    // Aplanar las estructuras de datos. En este punto, deben ser instancias válidas.
                     clientePlano.pilaTransaccionesReversibles = { transacciones: cliente.pilaTransaccionesReversibles.transacciones };
-                    clientePlano.transaccionesProgramadas = { elementos: cliente.transaccionesProgramadas.obtenerElementos() };
-                    
+                    clientePlano.transaccionesProgramadas = { elementos: cliente.transaccionesProgramadas.obtenerElementos() }; // Correcto
+
                     if (cliente.notificaciones instanceof ListaCircular) {
                         clientePlano.notificaciones = {
-                            elementos: cliente.notificaciones.obtenerTodos(),
+                            elementos: cliente.notificaciones.obtenerTodos(), // <-- ¡CAMBIADO A 'elementos' AQUI!
                             capacidad: cliente.notificaciones.getCapacidad(),
                             cabeza: cliente.notificaciones.cabeza,
                             cola: cliente.notificaciones.cola,
@@ -130,16 +125,11 @@ class Storage {
     static buscarCliente(id) {
         let clienteEncontrado = datos.clientes.find(cliente => cliente.id === id);
 
-        // Si se encuentra, asegúrate de que sea una instancia rehidratada.
-        // Si no es una instancia de Cliente, lo rehidratamos y actualizamos el array.
         if (clienteEncontrado && !(clienteEncontrado instanceof Cliente)) {
             console.warn(`Cliente ${id} encontrado como objeto plano en 'datos.clientes'. Rehidratando.`);
             
             let rehydratedCliente = new Cliente(clienteEncontrado.id, clienteEncontrado.nombre, clienteEncontrado.contrasena);
-            rehydratedCliente.saldo = clienteEncontrado.saldo || 0;
-            rehydratedCliente.puntos = clienteEncontrado.puntos || 0;
-            rehydratedCliente.rango = clienteEncontrado.rango || "Bronce";
-            rehydratedCliente.historialTransacciones = Array.isArray(clienteEncontrado.historialTransacciones) ? clienteEncontrado.historialTransacciones : [];
+            Object.assign(rehydratedCliente, clienteEncontrado);
 
             if (clienteEncontrado.pilaTransaccionesReversibles && Array.isArray(clienteEncontrado.pilaTransaccionesReversibles.transacciones)) {
                 rehydratedCliente.pilaTransaccionesReversibles = new PilaTransacciones();
@@ -148,9 +138,9 @@ class Storage {
                 rehydratedCliente.pilaTransaccionesReversibles = new PilaTransacciones();
             }
 
-            if (clienteEncontrado.transaccionesProgramadas && Array.isArray(clienteEncontrado.transaccionesProgramadas.elementos)) {
+            if (clienteEncontrado.transaccionesProgramadas && Array.isArray(clienteEncontrado.transaccionesProgramadas.elements)) { // Usar 'elements' aquí
                 rehydratedCliente.transaccionesProgramadas = new ColaPrioridad();
-                clienteEncontrado.transaccionesProgramadas.elementos.forEach(tp => rehydratedCliente.transaccionesProgramadas.encolar(tp));
+                clienteEncontrado.transaccionesProgramadas.elements.forEach(tp => rehydratedCliente.transaccionesProgramadas.encolar(tp));
             } else {
                 rehydratedCliente.transaccionesProgramadas = new ColaPrioridad();
             }
@@ -159,7 +149,14 @@ class Storage {
                 const rehydratedNotificaciones = ListaCircular.fromPlainObject(clienteEncontrado.notificaciones);
                 if (rehydratedNotificaciones) {
                     if (Array.isArray(rehydratedNotificaciones.elementos)) {
-                        rehydratedNotificaciones.elementos = rehydratedNotificaciones.elementos.map(n => (n instanceof Notificacion) ? n : new Notificacion(n.mensaje, n.tipo, n.idTransaccion, n.leida));
+                        rehydratedNotificaciones.elementos = rehydratedNotificaciones.elementos.map(n => {
+                            // AQUI EL CAMBIO: Verificar si 'n' es null/undefined antes de acceder a sus propiedades
+                            if (n === null || typeof n === 'undefined') {
+                                return n; // Devolver el elemento tal cual (null o undefined)
+                            }
+                            // Asegurarse de pasar todos los parámetros, incluyendo fecha e id
+                            return (n instanceof Notificacion) ? n : new Notificacion(n.mensaje, n.tipo, n.idTransaccion, n.leida, n.fecha, n.id);
+                        });
                     }
                     rehydratedCliente.notificaciones = rehydratedNotificaciones;
                 } else {
@@ -169,21 +166,19 @@ class Storage {
                 rehydratedCliente.notificaciones = new ListaCircular();
             }
             
-            // Reemplazar el objeto plano en 'datos.clientes' con la instancia rehidratada
             const index = datos.clientes.findIndex(c => c.id === id);
             if (index !== -1) {
                 datos.clientes[index] = rehydratedCliente;
             }
             return rehydratedCliente;
         }
-        return clienteEncontrado; // Si ya es una instancia de Cliente o si no se encontró
+        return clienteEncontrado;
     }
 
     static agregarCliente(nuevoCliente) {
         if (!nuevoCliente || !nuevoCliente.id) {
             return "Error: Cliente inválido.";
         }
-        // Asegurarse de que el nuevoCliente ya tiene las instancias correctas al agregarse
         if (!(nuevoCliente.notificaciones instanceof ListaCircular)) {
             nuevoCliente.notificaciones = new ListaCircular(ListaCircular.CAPACIDAD_DEFAULT);
         }
@@ -200,9 +195,8 @@ class Storage {
     }
 
     static agregarTransaccion(idCliente, transaccion) {
-        const cliente = Storage.buscarCliente(idCliente); // Obtiene el cliente, ahora rehidratado
+        const cliente = Storage.buscarCliente(idCliente);
         if (cliente) {
-            // Asegurarse de que las sub-estructuras sean instancias ANTES de usarlas
             if (!cliente.historialTransacciones) {
                 cliente.historialTransacciones = [];
             }
@@ -224,22 +218,17 @@ class Storage {
     static actualizarCliente(clienteActualizado) {
         const index = datos.clientes.findIndex(c => c.id === clienteActualizado.id);
         if (index !== -1) {
-            // Reemplazar directamente con la instancia actualizada
             datos.clientes[index] = clienteActualizado;
-            Storage.guardarDatos(); // Guardar todos los datos
+            Storage.guardarDatos();
             return true;
         }
         return false;
     }
 
     static obtenerTodosLosClientes() {
-        // Asegúrate de que todos los clientes devueltos sean instancias rehidratadas
         return datos.clientes.map(c => {
-             // Si por alguna razón un cliente en 'datos.clientes' no es una instancia,
-             // lo rehidratamos aquí también. (Redundante si buscarCliente ya lo hace, pero seguro)
              if (!(c instanceof Cliente)) {
-                 // Puedes usar el mismo proceso de rehidratación que en buscarCliente
-                 return Storage.buscarCliente(c.id); // Llama a buscarCliente que ya sabe rehidratar y actualizar
+                 return Storage.buscarCliente(c.id);
              }
              return c;
          });

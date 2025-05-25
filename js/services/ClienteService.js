@@ -115,6 +115,7 @@ class ClienteService {
             NotificacionService.agregarNotificacion(idCliente, new Notificacion(mensajeConfirmacion, 'informativo', transaccion.id));
         }
         return exito;
+
     }
 
     static actualizarPuntosPorTransaccion(idCliente, transaccion) {
@@ -185,6 +186,8 @@ class ClienteService {
     static obtenerTodosLosClientes() {
         return Storage.obtenerTodosLosClientes();
     }
+
+
 }
 
 // Llama a inicializarClienteActual tan pronto como el script se cargue,

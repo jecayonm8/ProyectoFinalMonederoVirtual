@@ -22,7 +22,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // Función para renderizar todas las notificaciones
     function renderNotificaciones() {
         notificacionesList.innerHTML = ''; // Limpiar la lista actual
-        const notificaciones = NotificacionService.obtenerNotificaciones(clienteLogueado.id);
+
+        // CAMBIO CRÍTICO AQUÍ: Llamar a la función estática con el nombre correcto
+        const notificaciones = NotificacionService.obtenerNotificacionesDelClienteActual(); 
 
         if (notificaciones.length === 0) {
             notificacionesList.innerHTML = '<li>No hay notificaciones.</li>';
@@ -64,19 +66,29 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Event listener para el botón "Marcar todas como leídas"
+    // NOTA: Tu NotificacionService no tiene un método estático 'marcarTodasComoLeidas'.
+    // Si quieres implementar esto, deberás añadirlo a NotificacionService.js.
+    // Por ahora, si no existe, esta línea causará un error similar.
+    // Podrías comentarla o implementarla en NotificacionService.
+    // NotificacionService.marcarTodasComoLeidas(clienteLogueado.id);
     marcarTodasLeidasBtn.addEventListener('click', () => {
-        NotificacionService.marcarTodasComoLeidas(clienteLogueado.id);
+        // Implementación temporal si no tienes marcarTodasComoLeidas en NotificacionService
+        // O asegúrate de que el método exista en NotificacionService
+        const notificaciones = NotificacionService.obtenerNotificacionesDelClienteActual();
+        notificaciones.forEach(notif => {
+            if (!notif.leida) {
+                NotificacionService.marcarNotificacionComoLeida(clienteLogueado.id, notif.id);
+            }
+        });
         renderNotificaciones(); // Volver a renderizar para actualizar el estado visual
     });
+
 
     // Llamar a la función de renderizado al cargar la página
     renderNotificaciones();
 
-    // Opcional: Ejecutar comprobaciones de notificaciones periódicamente
-    // Esto es más un "trigger" para el backend o un servicio que corre continuamente.
-    // Para una aplicación web frontend, podrías ejecutarlo al cargar la página o en un temporizador.
-    // Aquí, lo llamamos al cargar. También, podrías llamar a NotificacionService.generarRecordatorioTransaccionesProgramadas
-    // desde aquí o desde el dashboard para que se ejecute con frecuencia.
+    // Generar alertas y recordatorios al cargar la página
+    // Asegúrate de que estas llamadas se hagan con el cliente.id si son necesarias aquí.
     NotificacionService.generarAlertaSaldoBajo(clienteLogueado.id);
-    NotificacionService.generarRecordatorioTransaccionesProgramadas(clienteLogueado.id); // Asegúrate de que esta función es compatible con tu ColaPrioridad
+    NotificacionService.generarRecordatorioTransaccionesProgramadas(clienteLogueado.id);
 });

@@ -3,28 +3,30 @@
 import ClienteService from "./ClienteService.js";
 import Notificacion from "../models/Notificacion.js";
 import ListaCircular from "../dataStructures/ListaCircular.js";
+import ColaPrioridad from "../dataStructures/ColaPrioridad.js";
+import TransaccionService from "./TransaccionService.js";
+import Transaccion from "../models/Transaccion.js";
+import Storage from "../../database/storage.js";
+
 
 class NotificacionService {
     static CAPACIDAD_NOTIFICACIONES = 10;
 
     static agregarNotificacion(clienteId, notificacion) {
-        const cliente = ClienteService.obtenerClienteActual();
-        if (cliente && cliente.id === clienteId) {
-            // Ya no necesitamos la lógica de rehidratación aquí,
-            // ClienteService y Storage ya deben garantizar que cliente.notificaciones es una ListaCircular.
-            if (!(cliente.notificaciones instanceof ListaCircular)) {
-                // Si esto sucede, hay un fallo fundamental en la rehidratación en ClienteService/Storage.
-                console.error("¡ERROR CRÍTICO! cliente.notificaciones no es una ListaCircular en NotificacionService.", cliente.notificaciones);
-                // Como último recurso, podríamos intentar re-inicializar, pero esto indica un problema mayor.
-                cliente.notificaciones = new ListaCircular(ListaCircular.CAPACIDAD_NOTIFICACIONES);
-            }
-            
-            cliente.notificaciones.agregar(notificacion);
-            ClienteService.guardarClienteActualEnLocalStorage();
-            return true;
+    const cliente = ClienteService.obtenerClienteActual();
+    if (cliente && cliente.id === clienteId) {
+        if (!(cliente.notificaciones instanceof ListaCircular)) {
+            console.error("¡ERROR CRÍTICO! cliente.notificaciones no es una ListaCircular en NotificacionService. Re-inicializando.", cliente.notificaciones);
+            // Si esto ocurre frecuentemente, indica un problema en la rehidratación o asignación del cliente.
+            cliente.notificaciones = new ListaCircular(ListaCircular.CAPACIDAD_DEFAULT); // Usar DEFAULT si no está definido
         }
-        console.error("No se pudo agregar la notificación: Cliente no encontrado o no es el cliente actual.");
-        return false;
+
+        cliente.notificaciones.agregar(notificacion);
+        ClienteService.guardarClienteActualEnLocalStorage();
+        return true;
+    }
+    console.error("No se pudo agregar la notificación: Cliente no encontrado o no es el cliente actual.");
+    return false;
     }
 
     static generarAlertaSaldoBajo(clienteId) {
@@ -68,11 +70,8 @@ class NotificacionService {
             cliente = clienteDesdeStorage;
         }
 
-        // ¡Ojo! tu cola de prioridad puede ser una lista circular.
-        // Aquí hay una inconsistencia: tu Cliente.js define transaccionesProgramadas como ColaPrioridad.
-        // Asegúrate de que esta propiedad sea una ColaPrioridad y no una ListaCircular en el modelo de Cliente.
         if (cliente.transaccionesProgramadas && cliente.transaccionesProgramadas instanceof ColaPrioridad) {
-            const transaccionesProximas = cliente.transaccionesProgramadas.obtenerTodos();
+            const transaccionesProximas = cliente.transaccionesProgramadas.obtenerElementos();
             const ahora = new Date();
             const unDiaEnMs = 24 * 60 * 60 * 1000;
 

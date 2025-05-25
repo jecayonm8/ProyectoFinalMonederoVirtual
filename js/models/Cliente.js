@@ -3,17 +3,17 @@ import ColaPrioridad from "../dataStructures/ColaPrioridad.js"; // Importar la C
 import ListaCircular from "../dataStructures/ListaCircular.js"; // Importa ListaCircular
 
 class Cliente {
-    constructor(id, nombre, contrasena, saldoInicial = 0) {
+    constructor(id, nombre, contrasena) {
         this.id = id;
         this.nombre = nombre;
         this.contrasena = contrasena;
-        this.saldo = saldoInicial;
+        this.saldo = 0;
         this.puntos = 0;
         this.rango = "Bronce";
         this.historialTransacciones = []; // Array simple para el historial
         this.pilaTransaccionesReversibles = new PilaTransacciones();
+        this.notificaciones = new ListaCircular(ListaCircular.CAPACIDAD_DEFAULT); // Siempre inicializar
         this.transaccionesProgramadas = new ColaPrioridad();
-        this.notificaciones = new ListaCircular(); // ¡Asegúrate de esto!
     }
 
     agregarTransaccionReversible(transaccion) {
