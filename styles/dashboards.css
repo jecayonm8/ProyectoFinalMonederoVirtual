@@ -334,6 +334,164 @@ footer {
     opacity: 0.8;
 }
 
+/* 🎁 Estilos para la sección de canje de beneficios */
+.benefits-exchange-card {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 2.5rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(12px);
+    margin-top: 2rem;
+    width: 90%;
+    max-width: 1000px;
+    text-align: center;
+    color: #fff;
+}
+
+.benefits-exchange-card h2 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    color: #fff;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.benefits-exchange-card h3 {
+    font-size: 1.4rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    color: #ffeb3b;
+}
+
+.benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.benefit-card {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.benefit-card.available {
+    border-color: rgba(76, 175, 80, 0.5);
+    background: rgba(76, 175, 80, 0.1);
+}
+
+.benefit-card.unavailable {
+    border-color: rgba(244, 67, 54, 0.5);
+    background: rgba(244, 67, 54, 0.1);
+    opacity: 0.7;
+}
+
+.benefit-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+
+.benefit-card h4 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: #fff;
+    font-weight: bold;
+}
+
+.benefit-description {
+    font-size: 0.9rem;
+    color: #e0e0e0;
+    margin-bottom: 1rem;
+    line-height: 1.4;
+}
+
+.benefit-cost {
+    font-size: 1rem;
+    color: #ffeb3b;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+}
+
+.benefit-btn {
+    width: 100%;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    color: white;
+    box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #45a049, #4CAF50);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(76, 175, 80, 0.4);
+}
+
+.btn-disabled {
+    background: linear-gradient(135deg, #757575, #616161);
+    color: #bbb;
+    cursor: not-allowed;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* 🏆 Estilos para beneficios activos */
+.active-benefits {
+    margin-top: 2rem;
+    text-align: left;
+}
+
+.active-benefits-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.active-benefit-item {
+    background: rgba(33, 150, 243, 0.2);
+    border: 2px solid rgba(33, 150, 243, 0.5);
+    border-radius: 10px;
+    padding: 1rem;
+    transition: all 0.3s ease;
+}
+
+.active-benefit-item:hover {
+    background: rgba(33, 150, 243, 0.3);
+    transform: translateY(-2px);
+}
+
+.active-benefit-item h5 {
+    font-size: 1.1rem;
+    color: #fff;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+.active-benefit-item p {
+    font-size: 0.9rem;
+    color: #e0e0e0;
+    margin-bottom: 0.5rem;
+}
+
+.benefit-date {
+    font-size: 0.8rem;
+    color: #bbb;
+    font-style: italic;
+}
+
 /* Responsividad para la tabla */
 @media (max-width: 600px) {
     .points-info-card table,
@@ -375,6 +533,19 @@ footer {
         font-weight: bold;
         text-align: left;
         color: #ffeb3b;
+    }
+
+    .benefits-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .benefit-card {
+        padding: 1rem;
+    }
+
+    .active-benefits-list {
+        grid-template-columns: 1fr;
     }
 }
 

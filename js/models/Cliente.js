@@ -10,6 +10,8 @@ class Cliente {
         this.saldo = 0;
         this.puntos = 0;
         this.rango = "Bronce";
+        this.beneficiosActivos = []; // Array para beneficios canjeados activos
+        this.historialCanjes = []; // Historial de canjes realizados
         this.historialTransacciones = []; // Array simple para el historial
         this.pilaTransaccionesReversibles = new PilaTransacciones();
         this.notificaciones = new ListaCircular(ListaCircular.CAPACIDAD_DEFAULT); // Siempre inicializar

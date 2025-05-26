@@ -122,28 +122,42 @@ class ClienteService {
         const cliente = ClienteService.obtenerClienteActual(); // Obtener la instancia en memoria
         if (cliente && cliente.id === idCliente) {
             // Modificar la instancia en memoria
+            let puntosBase = 0;
             if (transaccion.tipo === "deposito") {
-                cliente.puntos += Math.floor(transaccion.monto / 100) * 1;
+                puntosBase = Math.floor(transaccion.monto / 100) * 1;
             } else if (transaccion.tipo === "retiro") {
-                cliente.puntos += Math.floor(transaccion.monto / 100) * 2;
+                puntosBase = Math.floor(transaccion.monto / 100) * 2;
             } else if (transaccion.tipo === "transferencia") {
-                cliente.puntos += Math.floor(transaccion.monto / 100) * 3;
+                puntosBase = Math.floor(transaccion.monto / 100) * 3;
             }
+            
+            // Aplicar multiplicador por rango
+            const multiplicador = ClienteService.obtenerMultiplicadorPuntosPorRango(cliente.rango);
+            const puntosFinales = Math.floor(puntosBase * multiplicador);
+            cliente.puntos += puntosFinales;
+            
             ClienteService.actualizarRango(cliente);
             ClienteService.guardarClienteActualEnLocalStorage(); // Guardar cambios de puntos y rango
         } else {
             // Si es otro cliente, buscarlo y actualizarlo directamente en Storage
             const otroCliente = Storage.buscarCliente(idCliente);
             if (otroCliente) {
-                 if (transaccion.tipo === "deposito") {
-                     otroCliente.puntos += Math.floor(transaccion.monto / 100) * 1;
-                 } else if (transaccion.tipo === "retiro") {
-                     otroCliente.puntos += Math.floor(transaccion.monto / 100) * 2;
-                 } else if (transaccion.tipo === "transferencia") {
-                     otroCliente.puntos += Math.floor(transaccion.monto / 100) * 3;
-                 }
-                 ClienteService._determinarRango(otroCliente); // Llama a la privada sin el `cliente`
-                 Storage.actualizarCliente(otroCliente); // Guardar cambios del otro cliente
+                let puntosBase = 0;
+                if (transaccion.tipo === "deposito") {
+                    puntosBase = Math.floor(transaccion.monto / 100) * 1;
+                } else if (transaccion.tipo === "retiro") {
+                    puntosBase = Math.floor(transaccion.monto / 100) * 2;
+                } else if (transaccion.tipo === "transferencia") {
+                    puntosBase = Math.floor(transaccion.monto / 100) * 3;
+                }
+                
+                // Aplicar multiplicador por rango
+                const multiplicador = ClienteService.obtenerMultiplicadorPuntosPorRango(otroCliente.rango);
+                const puntosFinales = Math.floor(puntosBase * multiplicador);
+                otroCliente.puntos += puntosFinales;
+                
+                ClienteService.actualizarRango(otroCliente);
+                Storage.actualizarCliente(otroCliente); // Guardar cambios del otro cliente
             }
         }
     }
@@ -181,6 +195,73 @@ class ClienteService {
         cliente.puntos = puntosCalculados;
         cliente.rango = ClienteService._determinarRango(puntosCalculados);
         ClienteService.guardarClienteActualEnLocalStorage(); // Guardar cambios
+    }
+
+    static obtenerMultiplicadorPuntosPorRango(rango) {
+        switch (rango) {
+            case 'Bronce': return 1.0;
+            case 'Plata': return 1.1;
+            case 'Oro': return 1.25;
+            case 'Platino': return 1.5;
+            default: return 1.0;
+        }
+    }
+
+    static canjearPuntos(beneficioId) {
+        const cliente = ClienteService.obtenerClienteActual();
+        if (!cliente) {
+            return { exito: false, mensaje: 'No hay cliente logueado.' };
+        }
+
+        // Importar dinámicamente para evitar dependencias circulares
+        import('../models/SistemaPuntos.js').then(({ default: SistemaPuntos }) => {
+            const sistemaPuntos = new SistemaPuntos();
+            const resultado = sistemaPuntos.canjearPuntos(cliente, beneficioId);
+            
+            if (resultado.exito) {
+                // Agregar al historial de canjes
+                if (!cliente.historialCanjes) {
+                    cliente.historialCanjes = [];
+                }
+                cliente.historialCanjes.push({
+                    beneficioId,
+                    fecha: new Date().toISOString(),
+                    costoPuntos: resultado.beneficio ? resultado.beneficio.costoPuntos : 0
+                });
+                
+                ClienteService.guardarClienteActualEnLocalStorage();
+            }
+            
+            return resultado;
+        });
+    }
+
+    static obtenerBeneficiosDisponibles() {
+        const cliente = ClienteService.obtenerClienteActual();
+        if (!cliente) return {};
+
+        // Importar dinámicamente para evitar dependencias circulares
+        return import('../models/SistemaPuntos.js').then(({ default: SistemaPuntos }) => {
+            const sistemaPuntos = new SistemaPuntos();
+            return sistemaPuntos.obtenerBeneficiosDisponibles(cliente);
+        });
+    }
+
+    static aplicarBeneficioEnTransaccion(tipoTransaccion, monto) {
+        const cliente = ClienteService.obtenerClienteActual();
+        if (!cliente) return { descuento: 0, beneficioUsado: null };
+
+        // Importar dinámicamente para evitar dependencias circulares
+        return import('../models/SistemaPuntos.js').then(({ default: SistemaPuntos }) => {
+            const sistemaPuntos = new SistemaPuntos();
+            const resultado = sistemaPuntos.aplicarBeneficioEnTransaccion(cliente, tipoTransaccion, monto);
+            
+            if (resultado.beneficioUsado) {
+                ClienteService.guardarClienteActualEnLocalStorage();
+            }
+            
+            return resultado;
+        });
     }
 
     static obtenerTodosLosClientes() {

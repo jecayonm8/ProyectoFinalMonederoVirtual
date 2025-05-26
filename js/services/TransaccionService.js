@@ -112,7 +112,7 @@ class TransaccionService {
      * @param {string} [categoria=null] Categoría de la transferencia (opcional).
      * @returns {string} Mensaje de éxito o error.
      */
-    static realizarTransferencia(idClienteOrigen, idClienteDestino, monto, categoria = null) {
+    static async realizarTransferencia(idClienteOrigen, idClienteDestino, monto, categoria = null) {
         if (idClienteOrigen === idClienteDestino) {
             return "Error: No se puede transferir dinero a la misma cuenta.";
         }
@@ -126,13 +126,35 @@ class TransaccionService {
         if (!clienteOrigen || !clienteDestino) {
             return "Error: Cliente de origen o destino no encontrado.";
         }
-        if (clienteOrigen.saldo < monto) {
+
+        // Verificar y aplicar beneficios activos
+        let montoFinal = monto;
+        let descuentoAplicado = 0;
+        let beneficioUsado = null;
+        let mensajeBeneficio = "";
+
+        try {
+            const resultadoBeneficio = await ClienteService.aplicarBeneficioEnTransaccion('transferencia', monto);
+            if (resultadoBeneficio && resultadoBeneficio.descuento > 0) {
+                descuentoAplicado = resultadoBeneficio.descuento;
+                beneficioUsado = resultadoBeneficio.beneficioUsado;
+                montoFinal = Math.max(0, monto - descuentoAplicado);
+                
+                if (beneficioUsado) {
+                    mensajeBeneficio = ` ¡Beneficio aplicado: ${beneficioUsado.nombre}! Descuento: $${descuentoAplicado.toFixed(2)}.`;
+                }
+            }
+        } catch (error) {
+            console.warn('Error al aplicar beneficios:', error);
+        }
+
+        if (clienteOrigen.saldo < montoFinal) {
             return "Error: Saldo insuficiente en la cuenta de origen.";
         }
 
-        // Realizar la transferencia
-        clienteOrigen.saldo -= monto;
-        clienteDestino.saldo += monto;
+        // Realizar la transferencia con el monto final (después del descuento)
+        clienteOrigen.saldo -= montoFinal;
+        clienteDestino.saldo += monto; // El destinatario recibe el monto completo
 
         const idTransaccion = TransaccionService.generarIdTransaccion();
         const fechaTransaccion = new Date();
@@ -168,14 +190,21 @@ class TransaccionService {
         // No se actualizan puntos para recepciones por defecto, pero podrías añadirlo si tu lógica lo requiere.
 
         // Notificaciones para ambas partes de la transferencia:
-        NotificacionService.agregarNotificacion(idClienteOrigen, new Notificacion(`Transferencia de $${monto.toFixed(2)} a ${clienteDestino.nombre} (ID: ${idClienteDestino}) realizada. Nuevo saldo: $${clienteOrigen.saldo.toFixed(2)}.`, 'informativo', transaccionOrigen.id));
+        const mensajeOrigen = `Transferencia de $${monto.toFixed(2)} a ${clienteDestino.nombre} (ID: ${idClienteDestino}) realizada.${mensajeBeneficio} Costo final: $${montoFinal.toFixed(2)}. Nuevo saldo: $${clienteOrigen.saldo.toFixed(2)}.`;
+        NotificacionService.agregarNotificacion(idClienteOrigen, new Notificacion(mensajeOrigen, 'informativo', transaccionOrigen.id));
         NotificacionService.generarAlertaSaldoBajo(idClienteOrigen); // Verifica saldo del origen
 
         NotificacionService.agregarNotificacion(idClienteDestino, new Notificacion(`Has recibido $${monto.toFixed(2)} de ${clienteOrigen.nombre} (ID: ${idClienteOrigen}). Nuevo saldo: $${clienteDestino.saldo.toFixed(2)}.`, 'informativo', transaccionDestino.id));
         NotificacionService.generarAlertaSaldoBajo(idClienteDestino); // Verifica saldo del destino
 
         Storage.guardarDatos(); // Guardar explícitamente después de todas las operaciones
-        return `Transferencia de ${monto.toFixed(2)} a ${idClienteDestino} realizada con éxito.`;
+        
+        let mensajeRetorno = `Transferencia de ${monto.toFixed(2)} a ${idClienteDestino} realizada con éxito.`;
+        if (descuentoAplicado > 0) {
+            mensajeRetorno += ` ${mensajeBeneficio} Costo final: $${montoFinal.toFixed(2)}.`;
+        }
+        
+        return mensajeRetorno;
     }
 
     /**
