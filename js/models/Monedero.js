@@ -1,8 +1,9 @@
 class Monedero {
-    constructor(id, tipo) {
+    constructor(id,nombre, tipo, saldo = 0) {
       this.id = id;
       this.tipo = tipo;  // Ej: "Ahorros", "Gastos"
-      this.saldo = 0;
+      this.saldo = saldo;
+      this.nombre = nombre;
     }
   
     depositar(monto) {

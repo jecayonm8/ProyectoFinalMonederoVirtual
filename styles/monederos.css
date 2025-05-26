@@ -1,0 +1,194 @@
+/* Fondo general */
+body {
+    background: linear-gradient(135deg, #232526 0%, #414345 100%);
+    min-height: 100vh;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+    color: #f5f5f5;
+}
+
+/* Encabezado */
+header {
+    background: #232526;
+    padding: 1.5rem 0 1rem 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2.2rem;
+    letter-spacing: 2px;
+    color: #ffd700;
+    text-shadow: 0 2px 8px #00000044;
+}
+
+.main-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0 0 0;
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+}
+
+.main-nav a {
+    color: #ffd700;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.1rem;
+    padding: 0.3rem 1rem;
+    border-radius: 6px;
+    transition: background 0.2s, color 0.2s;
+}
+
+.main-nav a.active,
+.main-nav a:hover {
+    background: #ffd700;
+    color: #232526;
+}
+
+/* Sección principal */
+.monederos-section {
+    max-width: 700px;
+    margin: 2.5rem auto 2rem auto;
+    background: rgba(34, 34, 34, 0.95);
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    padding: 2.5rem 2rem;
+}
+
+.monederos-section h2 {
+    text-align: center;
+    color: #ffd700;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+    letter-spacing: 1px;
+}
+
+/* Saldo principal */
+#saldoCuentaPrincipal {
+    text-align: right;
+    font-size: 1.2rem;
+    color: #4caf50;
+    margin-bottom: 1.5rem;
+    font-weight: bold;
+}
+
+/* Formularios */
+form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    background: rgba(255,255,255,0.04);
+    padding: 1.2rem 1rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px #0002;
+}
+
+form input, form select {
+    flex: 1 1 180px;
+    padding: 0.7rem;
+    border: none;
+    border-radius: 6px;
+    background: #2c2c2c;
+    color: #ffd700;
+    font-size: 1rem;
+    margin-right: 0.5rem;
+    outline: none;
+    transition: background 0.2s;
+}
+
+form input:focus, form select:focus {
+    background: #393939;
+}
+
+form button {
+    flex: 1 1 120px;
+    background: linear-gradient(90deg, #ffd700 60%, #ffb300 100%);
+    color: #232526;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 1rem;
+    padding: 0.7rem 1.2rem;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+form button:hover {
+    background: linear-gradient(90deg, #ffb300 60%, #ffd700 100%);
+    color: #232526;
+}
+
+/* Lista de monederos */
+#listaMonederos {
+    margin-top: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+}
+
+#listaMonederos > div {
+    background: linear-gradient(135deg, #ffd70022 0%, #232526 100%);
+    border-radius: 12px;
+    padding: 1.2rem 1rem;
+    box-shadow: 0 4px 16px #0003;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    border: 1.5px solid #ffd70044;
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+
+#listaMonederos > div:hover {
+    transform: translateY(-4px) scale(1.03);
+    box-shadow: 0 8px 24px #0005;
+    border-color: #ffd700;
+}
+
+#listaMonederos > div span {
+    font-size: 1.1rem;
+    color: #ffd700;
+    font-weight: bold;
+}
+
+#listaMonederos > div small {
+    color: #bdbdbd;
+    margin-top: 0.3rem;
+    font-size: 0.95rem;
+}
+
+#listaMonederos > div .saldo {
+    color: #4caf50;
+    font-size: 1.3rem;
+    margin: 0.5rem 0 0.2rem 0;
+    font-weight: bold;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 1.2rem 0 0.7rem 0;
+    color: #ffd700;
+    background: #232526;
+    margin-top: 2rem;
+    font-size: 1rem;
+    letter-spacing: 1px;
+    border-top: 1px solid #ffd70033;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .monederos-section {
+        max-width: 98vw;
+        padding: 1.2rem 0.5rem;
+    }
+    #listaMonederos {
+        grid-template-columns: 1fr;
+    }
+    form {
+        flex-direction: column;
+    }
+}

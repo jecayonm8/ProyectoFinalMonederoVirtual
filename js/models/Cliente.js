@@ -41,6 +41,14 @@ class Cliente {
     agregarNotificacion(notificacion) {
       this.notificaciones.agregar(notificacion);
     }
+
+    agregarMonedero(monedero) {
+        this.monederos.push(monedero);
+    }
+
+    obtenerMonederoPorId(idMonedero) {
+        return this.monederos.find(m => m.id === idMonedero);
+    }
 }
 
 export default Cliente;

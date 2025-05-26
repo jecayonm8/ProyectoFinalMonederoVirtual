@@ -1,6 +1,7 @@
 // js/services/ClienteService.js
 import Storage from "../../database/storage.js";
 import Cliente from "../models/Cliente.js";
+import Monedero from "../models/Monedero.js";
 import { PilaTransacciones } from "../models/Transaccion.js";
 import ColaPrioridad from "../dataStructures/ColaPrioridad.js";
 import ListaCircular from "../dataStructures/ListaCircular.js";
@@ -263,6 +264,52 @@ class ClienteService {
             return resultado;
         });
     }
+
+
+
+static guardarCliente(cliente) {
+    Storage.actualizarCliente(cliente);
+}
+
+static crearMonederoParaCliente(idCliente, nombre, tipo, montoInicial = 0) {
+    const cliente = Storage.buscarCliente(idCliente);
+    if (!cliente) return { exito: false, mensaje: "Cliente no encontrado." };
+
+    // Validar que no exista un monedero igual
+    if (cliente.monederos.some(m => m.nombre === nombre && m.tipo === tipo)) {
+        return { exito: false, mensaje: "Ya existe un monedero con ese nombre y tipo." };
+    }
+
+    // Validar saldo suficiente
+    if (montoInicial > cliente.saldo) {
+        return { exito: false, mensaje: "Saldo insuficiente en la cuenta principal." };
+    }
+
+    const monedero = new Monedero(Date.now().toString(), nombre, tipo);
+    monedero.saldo = montoInicial;
+    cliente.saldo -= montoInicial;
+    cliente.monederos.push(monedero);
+
+    ClienteService.guardarCliente(cliente);
+    return { exito: true, monedero };
+}
+
+static transferirEntreMonederos(idCliente, idOrigen, idDestino, monto) {
+    const cliente = Storage.buscarCliente(idCliente);
+    if (!cliente) return { exito: false, mensaje: "Cliente no encontrado." };
+    const origen = cliente.monederos.find(m => m.id === idOrigen);
+    const destino = cliente.monederos.find(m => m.id === idDestino);
+
+    if (!origen || !destino) return { exito: false, mensaje: "Monedero no encontrado." };
+    if (origen.id === destino.id) return { exito: false, mensaje: "No puede transferir al mismo monedero." };
+    if (monto <= 0 || monto > origen.saldo) return { exito: false, mensaje: "Monto inválido o saldo insuficiente." };
+
+    origen.saldo -= monto;
+    destino.saldo += monto;
+    ClienteService.guardarCliente(cliente); 
+    return { exito: true, mensaje: `Transferencia exitosa de ${monto} de ${origen.nombre} a ${destino.nombre}` };
+}
+
 
     static obtenerTodosLosClientes() {
         return Storage.obtenerTodosLosClientes();

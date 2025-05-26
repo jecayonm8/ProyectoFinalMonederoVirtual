@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Monederos - Monedero Virtual</title>
+    <link rel="stylesheet" href="../styles/dashboards.css">
+    <link rel="stylesheet" href="../styles/monederos.css">
+</head>
+<body>
+    <header>
+        <h1>MIS MONEDEROS</h1>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="transactions.html">Transacciones</a></li>
+                <li><a href="historial.html">Historial</a></li>
+                <li><a href="notificaciones.html">Notificaciones</a></li>
+                <li><a href="configuracion.html">Configuración</a></li>
+                <li><a href="monedero.html" class="active">Monederos</a></li>
+                <li><a href="analisisGasto.html">Análisis de Gasto</a></li>
+            </ul>
+        </nav>
+        <button id="cerrarSesionBtn" class="header-button">Cerrar Sesión</button>
+    </header>
+
+    <main>
+        <section class="monederos-section">
+            <h2>Mis Monederos</h2>
+            <div id="saldoCuentaPrincipal"></div>
+            <form id="formNuevoMonedero">
+                <input type="text" id="nombreMonedero" placeholder="Nombre" required>
+                <select id="tipoMonedero" required>
+                    <option value="ahorro">Ahorro</option>
+                    <option value="gastos">Gastos Diarios</option>
+                </select>
+                <input type="number" id="montoInicial" placeholder="Monto inicial" min="0" step="0.01" required>
+                <button type="submit">Crear Monedero</button>
+            </form>
+            <form id="formTransferencia">
+                <select id="monederoOrigen"></select>
+                <select id="monederoDestino"></select>
+                <input type="number" id="montoTransferencia" placeholder="Monto" min="0" step="0.01" required>
+                <button type="submit">Transferir</button>
+            </form>
+            <div id="listaMonederos"></div>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2025 Monedero Virtual - Todos los derechos reservados.</p>
+    </footer>
+
+    <script type="module" src="../js/ui/logout.js"></script>
+    <script type="module" src="../js/ui/monederoUI.js"></script>
+</body>
+</html>
