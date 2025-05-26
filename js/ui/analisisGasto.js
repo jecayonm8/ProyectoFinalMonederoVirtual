@@ -1,170 +1,217 @@
-class SistemaCanjeoPuntos {
-    constructor() {
-        this.beneficiosDisponibles = {
-            'descuento_transferencia_5': {
-                nombre: 'Descuento 5% en Transferencias',
-                descripcion: 'Obtén un 5% de descuento en tu próxima transferencia',
-                costoPuntos: 100,
-                tipo: 'descuento',
-                valor: 0.05,
-                usos: 1
-            },
-            'descuento_transferencia_10': {
-                nombre: 'Descuento 10% en Transferencias',
-                descripcion: 'Obtén un 10% de descuento en tu próxima transferencia',
-                costoPuntos: 200,
-                tipo: 'descuento',
-                valor: 0.10,
-                usos: 1
-            },
-            'descuento_transferencia_15': {
-                nombre: 'Descuento 15% en Transferencias',
-                descripcion: 'Obtén un 15% de descuento en tu próxima transferencia',
-                costoPuntos: 300,
-                tipo: 'descuento',
-                valor: 0.15,
-                usos: 1
-            },
-            'transferencia_gratis': {
-                nombre: 'Transferencia Gratuita',
-                descripcion: 'Realiza una transferencia sin costo adicional',
-                costoPuntos: 80,
-                tipo: 'transferencia_gratis',
-                valor: 1,
-                usos: 1
+// js/ui/analisisGasto.js
+
+import ClienteService from "../services/ClienteService.js";
+import AnalisisGastoService from "../services/AnalisisGastoService.js";
+
+document.addEventListener("DOMContentLoaded", () => {
+    const clienteActualInfoDiv = document.getElementById("clienteActualInfo");
+    const gastosPorCategoriaList = document.getElementById("gastosPorCategoriaList");
+    const transferenciasSalientesList = document.getElementById("transferenciasSalientesList");
+    const clientesMasInteraccionList = document.getElementById("clientesMasInteraccionList");
+    const categoriasMasPopularesList = document.getElementById("categoriasMasPopularesList");
+    const networkGraphDiv = document.getElementById("networkGraph"); // <-- Nuevo elemento para el grafo
+
+    const clienteLogueado = ClienteService.obtenerClienteActual();
+
+    if (!clienteLogueado) {
+        clienteActualInfoDiv.innerHTML = "<p class='error'>No hay cliente logueado. Por favor, inicie sesión.</p>";
+        // Opcional: Redirigir al login
+        // window.location.href = '../index.html';
+        return;
+    }
+
+    clienteActualInfoDiv.innerHTML = `
+        <p>Cliente: <strong>${clienteLogueado.nombre}</strong> (ID: ${clienteLogueado.id})</p>
+    `;
+
+    // --- Renderizar Gastos por Categoría del cliente actual ---
+    function renderGastosPorCategoria() {
+        gastosPorCategoriaList.innerHTML = ''; // Limpiar lista
+        const gastos = AnalisisGastoService.obtenerGastosPorCategoria(clienteLogueado.id);
+        if (gastos.size === 0) {
+            gastosPorCategoriaList.innerHTML = '<li>No se han registrado gastos por categoría para este cliente.</li>';
+        } else {
+            gastos.forEach((monto, categoria) => {
+                const li = document.createElement('li');
+                li.innerHTML = `<span>${categoria}:</span> $${monto.toFixed(2)}`;
+                gastosPorCategoriaList.appendChild(li);
+            });
+        }
+    }
+
+    // --- Renderizar Transferencias Salientes del cliente actual ---
+    function renderTransferenciasSalientes() {
+        transferenciasSalientesList.innerHTML = ''; // Limpiar lista
+        const transferencias = AnalisisGastoService.obtenerTransferenciasPorCliente(clienteLogueado.id);
+        if (transferencias.size === 0) {
+            transferenciasSalientesList.innerHTML = '<li>No se han registrado transferencias salientes para este cliente.</li>';
+        } else {
+            transferencias.forEach((monto, idDestino) => {
+                const li = document.createElement('li');
+                li.innerHTML = `<span>A Cliente ${idDestino}:</span> $${monto.toFixed(2)}`;
+                transferenciasSalientesList.appendChild(li);
+            });
+        }
+    }
+
+    // --- Renderizar Clientes con Más Interacción ---
+    function renderClientesMasInteraccion() {
+        clientesMasInteraccionList.innerHTML = ''; // Limpiar lista
+        const clientesTop = AnalisisGastoService.obtenerClientesConMasInteraccion(5); // Top 5
+        if (clientesTop.length === 0) {
+            clientesMasInteraccionList.innerHTML = '<li>No hay datos de interacción de clientes.</li>';
+        } else {
+            clientesTop.forEach(item => {
+                const li = document.createElement('li');
+                li.innerHTML = `<span>Cliente ${item.idCliente}:</span> $${item.montoTotal.toFixed(2)} total`;
+                clientesMasInteraccionList.appendChild(li);
+            });
+        }
+    }
+
+    // --- Renderizar Categorías Más Populares ---
+    function renderCategoriasMasPopulares() {
+        categoriasMasPopularesList.innerHTML = ''; // Limpiar lista
+        const categoriasTop = AnalisisGastoService.obtenerCategoriasMasPopulares(5); // Top 5
+        if (categoriasTop.length === 0) {
+            categoriasMasPopularesList.innerHTML = '<li>No hay datos de categorías de gasto populares.</li>';
+        } else {
+            categoriasTop.forEach(item => {
+                const li = document.createElement('li');
+                li.innerHTML = `<span>${item.categoria}:</span> $${item.montoTotal.toFixed(2)} total`;
+                categoriasMasPopularesList.appendChild(li);
+            });
+        }
+    }
+
+    // --- Función para renderizar el grafo visual ---
+    function renderNetworkGraph() {
+        // Asegurarse de que el grafo de AnalisisGastoService esté construido
+        AnalisisGastoService.construirGrafoDeGastos();
+        const grafoInterno = AnalisisGastoService.grafoGastos;
+
+        const nodes = [];
+        const edges = [];
+        const nodeIds = new Set(); // Para evitar nodos duplicados
+
+        // Recorrer todos los nodos del grafo y añadirlos a la lista de nodos de Vis.js
+        grafoInterno.getNodes().forEach(nodeId => {
+            if (!nodeIds.has(nodeId)) {
+                let label = nodeId;
+                let color = '#97C2E0'; // Color por defecto para clientes
+                if (nodeId.startsWith("Categoria:")) {
+                    label = nodeId.replace("Categoria: ", "");
+                    color = '#FFA500'; // Naranja para categorías
+                } else {
+                    // Puedes buscar el nombre del cliente si lo necesitas
+                    const cliente = ClienteService.buscarClientePorId(nodeId);
+                    if (cliente) {
+                        label = cliente.nombre + " (ID: " + nodeId + ")";
+                    }
+                }
+                nodes.push({ id: nodeId, label: label, color: color });
+                nodeIds.add(nodeId);
             }
-        };
-    }
+        });
 
-    obtenerBeneficiosDisponibles(rangoCliente) {
-        const beneficios = { ...this.beneficiosDisponibles };
-        
-        // Filtrar beneficios según el rango
-        switch (rangoCliente) {
-            case 'Bronce':
-                // Solo beneficios básicos
-                delete beneficios.descuento_transferencia_15;
-                break;
-            case 'Plata':
-                // Acceso a más beneficios
-                break;
-            case 'Oro':
-                // Descuento en costos de beneficios
-                Object.keys(beneficios).forEach(key => {
-                    beneficios[key].costoPuntos = Math.floor(beneficios[key].costoPuntos * 0.9);
-                });
-                break;
-            case 'Platino':
-                // Máximo descuento en costos
-                Object.keys(beneficios).forEach(key => {
-                    beneficios[key].costoPuntos = Math.floor(beneficios[key].costoPuntos * 0.8);
-                });
-                break;
-        }
-        
-        return beneficios;
-    }
+        // Recorrer todas las aristas del grafo y añadirlas a la lista de aristas de Vis.js
+        grafoInterno.getNodes().forEach(origen => {
+            const adyacentes = grafoInterno.getAdjacentNodes(origen);
+            if (adyacentes) {
+                for (let [destino, peso] of adyacentes) {
+                    // Asegurarse de que el nodo destino también esté en la lista de nodos
+                    if (!nodeIds.has(destino)) {
+                        let label = destino;
+                        let color = '#97C2E0';
+                        if (destino.startsWith("Categoria:")) {
+                            label = destino.replace("Categoria: ", "");
+                            color = '#FFA500';
+                        } else {
+                            const cliente = ClienteService.buscarClientePorId(destino);
+                            if (cliente) {
+                                label = cliente.nombre + " (ID: " + destino + ")";
+                            }
+                        }
+                        nodes.push({ id: destino, label: label, color: color });
+                        nodeIds.add(destino);
+                    }
 
-    canjearBeneficio(cliente, beneficioId) {
-        const beneficiosDisponibles = this.obtenerBeneficiosDisponibles(cliente.rango);
-        const beneficio = beneficiosDisponibles[beneficioId];
-        
-        if (!beneficio) {
-            return {
-                exito: false,
-                mensaje: 'Beneficio no disponible para tu rango.'
-            };
-        }
-        
-        if (cliente.puntos < beneficio.costoPuntos) {
-            return {
-                exito: false,
-                mensaje: `Puntos insuficientes. Necesitas ${beneficio.costoPuntos} puntos.`
-            };
-        }
-        
-        // Descontar puntos
-        cliente.puntos -= beneficio.costoPuntos;
-        
-        // Aplicar beneficio
-        if (!cliente.beneficiosActivos) {
-            cliente.beneficiosActivos = [];
-        }
-        
-        const beneficioActivo = {
-            id: beneficioId,
-            nombre: beneficio.nombre,
-            tipo: beneficio.tipo,
-            valor: beneficio.valor,
-            usosRestantes: beneficio.usos,
-            fechaCanje: new Date().toISOString()
-        };
-        
-        // Aplicar beneficio inmediato si es bono de puntos
-        if (beneficio.tipo === 'bono_puntos') {
-            cliente.puntos += beneficio.valor;
-            return {
-                exito: true,
-                mensaje: `¡Beneficio canjeado! Has recibido ${beneficio.valor} puntos adicionales.`,
-                beneficio: beneficioActivo
-            };
-        }
-        
-        cliente.beneficiosActivos.push(beneficioActivo);
-        
-        return {
-            exito: true,
-            mensaje: `¡Beneficio "${beneficio.nombre}" canjeado exitosamente!`,
-            beneficio: beneficioActivo
-        };
-    }
-
-    aplicarBeneficioEnTransaccion(cliente, tipoTransaccion, monto) {
-        if (!cliente.beneficiosActivos || cliente.beneficiosActivos.length === 0) {
-            return { descuento: 0, beneficioUsado: null };
-        }
-        
-        let descuentoAplicado = 0;
-        let beneficioUsado = null;
-        
-        // Buscar beneficio aplicable
-        for (let i = 0; i < cliente.beneficiosActivos.length; i++) {
-            const beneficio = cliente.beneficiosActivos[i];
-            
-            if (beneficio.usosRestantes <= 0) continue;
-            
-            if (tipoTransaccion === 'transferencia') {
-                if (beneficio.tipo === 'descuento') {
-                    descuentoAplicado = monto * beneficio.valor;
-                    beneficio.usosRestantes--;
-                    beneficioUsado = beneficio;
-                    break;
-                } else if (beneficio.tipo === 'transferencia_gratis') {
-                    descuentoAplicado = monto; // Transferencia completamente gratis
-                    beneficio.usosRestantes--;
-                    beneficioUsado = beneficio;
-                    break;
+                    edges.push({
+                        from: origen,
+                        to: destino,
+                        value: peso, // El peso para el grosor de la arista
+                        label: `$${peso.toFixed(2)}`, // Etiqueta en la arista
+                        arrows: 'to', // Flecha en la dirección del flujo
+                        color: { color: '#848484', highlight: '#000000' }
+                    });
                 }
             }
-        }
-        
-        // Limpiar beneficios agotados
-        if (cliente.beneficiosActivos) {
-            cliente.beneficiosActivos = cliente.beneficiosActivos.filter(b => b.usosRestantes > 0);
-        }
-        
-        return { descuento: descuentoAplicado, beneficioUsado };
+        });
+
+        // Crear un objeto de datos de Vis.js
+        const data = {
+            nodes: new vis.DataSet(nodes),
+            edges: new vis.DataSet(edges)
+        };
+
+        // Opciones para la visualización del grafo
+        const options = {
+            nodes: {
+                shape: 'dot',
+                size: 20,
+                font: {
+                    size: 12,
+                    color: '#333'
+                },
+                borderWidth: 2
+            },
+            edges: {
+                width: 2, // Grosor por defecto
+                arrows: {
+                    to: {
+                        enabled: true,
+                        scaleFactor: 0.7
+                    }
+                },
+                font: {
+                    size: 10,
+                    align: 'middle'
+                },
+                smooth: {
+                    enabled: true,
+                    type: "dynamic"
+                }
+            },
+            physics: {
+                enabled: true,
+                barnesHut: {
+                    gravitationalConstant: -2000,
+                    centralGravity: 0.3,
+                    springLength: 95,
+                    springConstant: 0.04,
+                    damping: 0.09,
+                    avoidOverlap: 1
+                },
+                solver: 'barnesHut'
+            },
+            interaction: {
+                navigationButtons: true,
+                keyboard: true
+                // Puedes añadir más interacciones como zoom, arrastrar, etc.
+            }
+        };
+
+        // Crear la red de Vis.js
+        const network = new vis.Network(networkGraphDiv, data, options);
+
+        // Opcional: Centrar el grafo en algún nodo al cargar
+        // network.fit();
     }
 
-    obtenerMultiplicadorPuntosPorRango(rango) {
-        switch (rango) {
-            case 'Bronce': return 1.0;
-            case 'Plata': return 1.1;
-            case 'Oro': return 1.25;
-            case 'Platino': return 1.5;
-            default: return 1.0;
-        }
-    }
-}
-
-export default SistemaCanjeoPuntos;
+    // Llamar a las funciones de renderizado al cargar la página
+    renderGastosPorCategoria();
+    renderTransferenciasSalientes();
+    renderClientesMasInteraccion();
+    renderCategoriasMasPopulares();
+    renderNetworkGraph(); // <-- ¡Llamar para renderizar el grafo!
+});
