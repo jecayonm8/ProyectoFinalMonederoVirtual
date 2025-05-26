@@ -16,7 +16,8 @@ class Cliente {
         this.pilaTransaccionesReversibles = new PilaTransacciones();
         this.notificaciones = new ListaCircular(ListaCircular.CAPACIDAD_DEFAULT); // Siempre inicializar
         this.transaccionesProgramadas = new ColaPrioridad();
-    }
+        this.monederos = []; // Array de Monedero
+      }
 
     agregarTransaccionReversible(transaccion) {
       this.pilaTransaccionesReversibles.agregar(transaccion);
