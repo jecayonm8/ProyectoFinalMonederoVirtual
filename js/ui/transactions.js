@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // --- NUEVOS ELEMENTOS PARA NOTIFICACIONES ---
     const notificacionesContainer = document.getElementById("notificaciones-container"); // Contenedor en tu HTML
     const notificacionesBadge = document.getElementById("notificaciones-badge"); // Opcional: para mostrar el número de no leídas
-
+    const limpiarNotificacionesBtn = document.getElementById("limpiarNotificacionesBtn"); // Botón para limpiar notificaciones
 
     // Función auxiliar para actualizar el cliente actual en memoria y localStorage.
     // Esta función está bien, pero el `guardarClienteActual` no existe en ClienteService.
@@ -152,7 +152,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // --- Lógica de Submit para Transacciones Inmediatas ---
-    transactionForm.addEventListener("submit", (e) => {
+    transactionForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
         const tipoOperacion = tipoOperacionSelect.value;
@@ -171,49 +171,96 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
+        // Mostrar mensaje de procesamiento
+        mensajeTransaccionDiv.textContent = "Procesando operación...";
+        mensajeTransaccionDiv.classList.remove("success", "error", "transferencia-success", "visible");
+        mensajeTransaccionDiv.classList.add("procesando", "visible");
+
         let resultado = "";
         let isSuccess = false;
 
-        switch (tipoOperacion) {
-            case "deposito":
-                resultado = TransaccionService.realizarDeposito(clienteLogueado.id, monto, tipoCuenta, metodoPago, categoriaGasto);
-                isSuccess = !resultado.startsWith("Error");
-                break;
-            case "retiro":
-                if (!categoriaGasto) {
-                    resultado = "Error: La categoría de gasto es obligatoria para retiros.";
-                } else {
-                    resultado = TransaccionService.realizarRetiro(clienteLogueado.id, monto, categoriaGasto);
+        try {
+            switch (tipoOperacion) {
+                case "deposito":
+                    resultado = TransaccionService.realizarDeposito(clienteLogueado.id, monto, tipoCuenta, metodoPago, categoriaGasto);
                     isSuccess = !resultado.startsWith("Error");
-                }
-                break;
-            case "transferencia":
-                if (!idClienteDestino) {
-                    resultado = "Error: El ID del cliente destino es obligatorio para transferencias.";
-                } else if (!categoriaGasto) {
-                    resultado = "Error: La categoría de gasto es obligatoria para transferencias.";
-                } else {
-                    resultado = TransaccionService.realizarTransferencia(clienteLogueado.id, idClienteDestino, monto, categoriaGasto);
-                    isSuccess = !resultado.startsWith("Error");
-                }
-                break;
-            default:
-                resultado = "Error: Tipo de operación no válido. Por favor, seleccione uno.";
-                break;
+                    if (isSuccess) {
+                        // Formatear mensaje de éxito para depósito
+                        resultado = `¡Depósito exitoso! Se han agregado $${monto.toFixed(2)} a tu cuenta en ${tipoCuenta}.`;
+                    }
+                    break;
+                case "retiro":
+                    if (!categoriaGasto) {
+                        resultado = "Error: La categoría de gasto es obligatoria para retiros.";
+                    } else {
+                        resultado = TransaccionService.realizarRetiro(clienteLogueado.id, monto, categoriaGasto);
+                        isSuccess = !resultado.startsWith("Error");
+                        if (isSuccess) {
+                            // Formatear mensaje de éxito para retiro
+                            resultado = `¡Retiro exitoso! Has retirado $${monto.toFixed(2)} de tu cuenta para ${categoriaGasto}.`;
+                        }
+                    }
+                    break;
+                case "transferencia":
+                    if (!idClienteDestino) {
+                        resultado = "Error: El ID del cliente destino es obligatorio para transferencias.";
+                    } else if (!categoriaGasto) {
+                        resultado = "Error: La categoría de gasto es obligatoria para transferencias.";
+                    } else {
+                        // Manejar correctamente la promesa con await
+                        resultado = await TransaccionService.realizarTransferencia(clienteLogueado.id, idClienteDestino, monto, categoriaGasto);
+                        isSuccess = !resultado.startsWith("Error");
+                        if (isSuccess) {
+                            // Si es exitoso, formatea el mensaje para ser más claro
+                            resultado = `¡Transferencia exitosa! Se ha transferido $${monto.toFixed(2)} al cliente ${idClienteDestino}.`;
+                        }
+                    }
+                    break;
+                default:
+                    resultado = "Error: Tipo de operación no válido. Por favor, seleccione uno.";
+                    break;
+            }
+        } catch (error) {
+            console.error("Error al procesar la transacción:", error);
+            resultado = `Error: Hubo un problema al procesar la operación. ${error.message || ''}`;
+            isSuccess = false;
         }
 
         mensajeTransaccionDiv.textContent = resultado;
-        mensajeTransaccionDiv.classList.remove("success", "error");
+        mensajeTransaccionDiv.classList.remove("success", "error", "transferencia-success", "visible");
+        
         if (isSuccess) {
-            mensajeTransaccionDiv.classList.add("success");
+            // Determinar la clase de éxito según el tipo de operación
+            if (tipoOperacion === "transferencia") {
+                mensajeTransaccionDiv.classList.add("transferencia-success");
+            } else if (tipoOperacion === "deposito") {
+                mensajeTransaccionDiv.classList.add("deposito-success");
+            } else if (tipoOperacion === "retiro") {
+                mensajeTransaccionDiv.classList.add("retiro-success");
+            } else {
+                mensajeTransaccionDiv.classList.add("success");
+            }
+            
+            // Resetear el formulario y ocultar campos no necesarios
             transactionForm.reset();
+            tipoOperacionSelect.value = ""; // Asegurar que se restablezca el select
             clienteDestinoGroup.style.display = "none";
             tipoCuentaGroup.style.display = "none";
             metodoPagoGroup.style.display = "none";
             categoriaGroup.style.display = "none";
+            idClienteDestinoInput.removeAttribute("required");
+            tipoCuentaSelect.removeAttribute("required");
+            metodoPagoSelect.removeAttribute("required");
             categoriaGastoInput.removeAttribute("required");
-            actualizarEstadoClienteEnUI(); // <-- Llamar a la función actualizada
-            actualizarInterfazDeNotificaciones(); // <--- IMPORTANTE: Actualizar notificaciones después de una transacción exitosa
+            
+            // Animar la aparición del mensaje
+            setTimeout(() => {
+                mensajeTransaccionDiv.classList.add("visible");
+            }, 10);
+            
+            // Actualizar datos
+            actualizarEstadoClienteEnUI();
+            actualizarInterfazDeNotificaciones();
         } else {
             mensajeTransaccionDiv.classList.add("error");
         }
@@ -321,10 +368,28 @@ document.addEventListener("DOMContentLoaded", () => {
     // --- Mecanismo de Procesamiento al cargar la página ---
     // Estas llamadas deben ocurrir después de que el cliente actual esté cargado.
     // También deben generar recordatorios de notificaciones.
+    // --- Manejador de eventos para el botón de limpiar notificaciones ---
+    if (limpiarNotificacionesBtn) {
+        limpiarNotificacionesBtn.addEventListener("click", () => {
+            const resultado = NotificacionService.limpiarTodasLasNotificaciones();
+            if (resultado) {
+                // Actualizar la interfaz después de limpiar
+                actualizarInterfazDeNotificaciones();
+                // Mostrar mensaje de éxito (opcional)
+                if (notificacionesContainer) {
+                    notificacionesContainer.innerHTML = '<p>Se han eliminado todas las notificaciones.</p>';
+                }
+            }
+        });
+    }
+
+    // --- Mecanismo de Procesamiento al cargar la página ---
+    // Estas llamadas deben ocurrir después de que el cliente actual esté cargado.
+    // También deben generar recordatorios de notificaciones.
     const clienteActualEnCarga = ClienteService.obtenerClienteActual();
     if (clienteActualEnCarga) {
         TransaccionProgramadaService.procesarTransaccionesPendientes();
-        NotificacionService.generarRecordatorioTransaccionesProgramadas(clienteActualEnCarga.id); // <--- NUEVO: Llamar aquí al cargar la página
+        NotificacionService.generarRecordatorioTransaccionesProgramadas(clienteActualEnCarga.id);
         actualizarInterfazDeNotificaciones(); // <--- NUEVO: Mostrar las notificaciones al cargar la página
     } else {
         // Redirigir si no hay cliente logueado, o mostrar un mensaje apropiado

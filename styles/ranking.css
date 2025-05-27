@@ -1,0 +1,187 @@
+/* styles/ranking.css */
+
+.ranking-card {
+    background-color: #4d78c1; /* Color sólido azul como las otras tarjetas */
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    color: white;
+}
+
+.ranking-card h2 {
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 1.8rem;
+}
+
+.mensaje {
+    text-align: center;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+}
+
+.mensaje.error {
+    background-color: rgba(255, 99, 71, 0.7);
+    color: white;
+}
+
+.mensaje.success {
+    background-color: rgba(50, 205, 50, 0.7);
+    color: white;
+}
+
+.stats-container {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+}
+
+.stat-box {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 15px;
+    min-width: 120px;
+    text-align: center;
+    margin: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+}
+
+.stat-box:hover {
+    transform: translateY(-5px);
+}
+
+.stat-box h3 {
+    margin-bottom: 5px;
+    font-size: 1.3rem;
+}
+
+.stat-count {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.stat-desc {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+/* Colores específicos para cada rango */
+.stat-box.platino {
+    background-color: #e5e4e2; /* Color platino */
+    color: #333;
+}
+
+.stat-box.oro {
+    background-color: #ffd700; /* Color oro */
+    color: #333;
+}
+
+.stat-box.plata {
+    background-color: #c0c0c0; /* Color plata */
+    color: #333;
+}
+
+.stat-box.bronce {
+    background-color: #cd7f32; /* Color bronce */
+    color: white;
+}
+
+.table-container {
+    overflow-x: auto;
+    margin-top: 20px;
+}
+
+#rankingTable {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+#rankingTable th,
+#rankingTable td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+#rankingTable th {
+    background-color: rgba(0, 0, 0, 0.2);
+    font-weight: bold;
+}
+
+#rankingTable tbody tr {
+    transition: background-color 0.3s;
+}
+
+#rankingTable tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Estilos para las filas según el rango */
+.rango-platino {
+    background-color: rgba(229, 228, 226, 0.3);
+}
+
+.rango-oro {
+    background-color: rgba(255, 215, 0, 0.3);
+}
+
+.rango-plata {
+    background-color: rgba(192, 192, 192, 0.3);
+}
+
+.rango-bronce {
+    background-color: rgba(205, 127, 50, 0.3);
+}
+
+/* Posiciones en el ranking */
+.posicion {
+    font-weight: bold;
+    text-align: center;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.posicion-1 {
+    background-color: #ffd700; /* Oro */
+    color: #333;
+}
+
+.posicion-2 {
+    background-color: #c0c0c0; /* Plata */
+    color: #333;
+}
+
+.posicion-3 {
+    background-color: #cd7f32; /* Bronce */
+    color: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .stats-container {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .stat-box {
+        width: 80%;
+        margin-bottom: 15px;
+    }
+    
+    #rankingTable th,
+    #rankingTable td {
+        padding: 8px 10px;
+        font-size: 0.9rem;
+    }
+}

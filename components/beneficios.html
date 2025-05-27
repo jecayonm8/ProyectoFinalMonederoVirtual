@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beneficios - Monedero Virtual</title>
+    <link rel="stylesheet" href="../styles/beneficios.css">
+</head>
+<body>
+    <header>
+        <h1>BENEFICIOS</h1>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="transactions.html">Transacciones</a></li>
+                <li><a href="historial.html">Historial</a></li>
+                <li><a href="notificaciones.html">Notificaciones</a></li>
+                <li><a href="monedero.html">Monederos</a></li>
+                <li><a href="beneficios.html" class="active">Beneficios</a></li>
+                <li><a href="analisisGasto.html">Análisis de Gasto</a></li>
+            </ul>
+        </nav>
+        <button id="cerrarSesionBtn" class="header-button">Cerrar Sesión</button>
+    </header>
+
+    <main>
+        <section class="info-cliente-card">
+            <h2>TUS PUNTOS</h2>
+            <div class="puntos-container">
+                <div class="puntos-circle">
+                    <span id="puntosCliente">0</span>
+                </div>
+                <p>Puntos disponibles</p>
+            </div>
+            <p>Rango actual: <span id="rangoCliente" class="rango-badge">Bronce</span></p>
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progresoRango"></div>
+                </div>
+                <p>Progreso hacia el siguiente rango: <span id="progresoTexto">0%</span></p>
+            </div>
+        </section>
+
+        <section class="benefits-exchange-card">
+            <h2>CANJE DE BENEFICIOS</h2>
+            <p>¡Usa tus puntos para obtener descuentos y beneficios especiales!</p>
+            
+            <div class="filters">
+                <button class="filter-btn active" data-filter="all">Todos</button>
+                <button class="filter-btn" data-filter="available">Disponibles</button>
+                <button class="filter-btn" data-filter="unavailable">No disponibles</button>
+            </div>
+            
+            <div class="benefits-container" id="beneficiosContainer">
+                <p>Cargando beneficios disponibles...</p>
+            </div>
+        </section>
+        
+        <section class="active-benefits-card">
+            <h2>BENEFICIOS ACTIVOS</h2>
+            <div class="active-benefits" id="beneficiosActivos">
+                <div id="listaBeneficiosActivos">
+                    <p>No tienes beneficios activos.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2025 Monedero Virtual - Todos los derechos reservados.</p>
+    </footer>
+
+    <script type="module" src="../js/ui/logout.js"></script>
+    <script type="module" src="../js/ui/beneficios.js"></script>
+    <script type="module" src="../js/ui/notification-indicator.js"></script>
+</body>
+</html>

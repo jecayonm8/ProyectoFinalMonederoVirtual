@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ranking de Clientes | Monedero Virtual</title>
+    <link rel="stylesheet" href="../styles/reset.css">
+    <link rel="stylesheet" href="../styles/global.css">
+    <link rel="stylesheet" href="../styles/dashboards.css">
+    <link rel="stylesheet" href="../styles/ranking.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <h1>RANKING DE CLIENTES</h1>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="transactions.html">Transacciones</a></li>
+                <li><a href="historial.html">Historial</a></li>
+                <li><a href="monederos.html">Monederos</a></li>
+                <li><a href="notificaciones.html">Notificaciones</a></li>
+                <li><a href="beneficios.html">Beneficios</a></li>
+                <li><a href="configuracion.html">Configuración</a></li>
+                <li><a href="analisisGasto.html">Análisis de Gasto</a></li>
+                <li class="active"><a href="ranking.html">Ranking</a></li>
+            </ul>
+        </nav>
+        <button id="cerrarSesionBtn" class="header-button">Cerrar Sesión</button>
+    </header>
+
+    <main>
+        <section class="ranking-card">
+            <h2>Ranking de Clientes por Puntos</h2>
+            <div id="mensajeRanking" class="mensaje"></div>
+
+            <div class="stats-container">
+                <div class="stat-box platino">
+                    <h3>Platino</h3>
+                    <p class="stat-count" id="platino-count">0</p>
+                    <p class="stat-desc">Clientes</p>
+                </div>
+                <div class="stat-box oro">
+                    <h3>Oro</h3>
+                    <p class="stat-count" id="oro-count">0</p>
+                    <p class="stat-desc">Clientes</p>
+                </div>
+                <div class="stat-box plata">
+                    <h3>Plata</h3>
+                    <p class="stat-count" id="plata-count">0</p>
+                    <p class="stat-desc">Clientes</p>
+                </div>
+                <div class="stat-box bronce">
+                    <h3>Bronce</h3>
+                    <p class="stat-count" id="bronce-count">0</p>
+                    <p class="stat-desc">Clientes</p>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table id="rankingTable">
+                    <thead>
+                        <tr>
+                            <th>Posición</th>
+                            <th>Cliente</th>
+                            <th>ID</th>
+                            <th>Puntos</th>
+                            <th>Rango</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Los datos se cargarán dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2025 Monedero Virtual - Todos los derechos reservados.</p>
+    </footer>
+
+    <script type="module" src="../js/ui/ranking.js"></script>
+    <script type="module" src="../js/ui/logout.js"></script>
+</body>
+</html>

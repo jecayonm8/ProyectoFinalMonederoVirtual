@@ -7,6 +7,7 @@ import ColaPrioridad from "../dataStructures/ColaPrioridad.js";
 import ListaCircular from "../dataStructures/ListaCircular.js";
 import NotificacionService from "./NotificacionService.js";
 import Notificacion from "../models/Notificacion.js";
+import rangosService from "./RangosService.js";
 
 let clienteActualEnMemoria = null; // Esta variable mantendrá la instancia rehidratada del cliente actual
 
@@ -135,10 +136,17 @@ class ClienteService {
             // Aplicar multiplicador por rango
             const multiplicador = ClienteService.obtenerMultiplicadorPuntosPorRango(cliente.rango);
             const puntosFinales = Math.floor(puntosBase * multiplicador);
-            cliente.puntos += puntosFinales;
+            const nuevosPuntosTotales = cliente.puntos + puntosFinales;
             
-            ClienteService.actualizarRango(cliente);
-            ClienteService.guardarClienteActualEnLocalStorage(); // Guardar cambios de puntos y rango
+            // Actualizar puntos en el cliente y en el árbol AVL
+            cliente.puntos = nuevosPuntosTotales;
+            
+            // Usar RangosService para actualizar el rango y el cliente en el árbol AVL
+            cliente.rango = rangosService.determinarRango(nuevosPuntosTotales);
+            rangosService.actualizarPuntosCliente(cliente.id, nuevosPuntosTotales);
+            
+            // Guardar cambios
+            ClienteService.guardarClienteActualEnLocalStorage();
         } else {
             // Si es otro cliente, buscarlo y actualizarlo directamente en Storage
             const otroCliente = Storage.buscarCliente(idCliente);
@@ -155,27 +163,35 @@ class ClienteService {
                 // Aplicar multiplicador por rango
                 const multiplicador = ClienteService.obtenerMultiplicadorPuntosPorRango(otroCliente.rango);
                 const puntosFinales = Math.floor(puntosBase * multiplicador);
-                otroCliente.puntos += puntosFinales;
+                const nuevosPuntosTotales = otroCliente.puntos + puntosFinales;
                 
-                ClienteService.actualizarRango(otroCliente);
-                Storage.actualizarCliente(otroCliente); // Guardar cambios del otro cliente
+                // Actualizar puntos en el cliente y en el árbol AVL
+                otroCliente.puntos = nuevosPuntosTotales;
+                
+                // Usar RangosService para actualizar el rango y el cliente en el árbol AVL
+                otroCliente.rango = rangosService.determinarRango(nuevosPuntosTotales);
+                rangosService.actualizarPuntosCliente(otroCliente.id, nuevosPuntosTotales);
+                
+                // Guardar cambios
+                Storage.actualizarCliente(otroCliente);
             }
         }
     }
 
     static actualizarRango(cliente) { // Este método recibe la instancia de cliente
-        cliente.rango = ClienteService._determinarRango(cliente.puntos);
+        // Usamos el RangosService con árboles AVL para determinar el rango
+        cliente.rango = rangosService.determinarRango(cliente.puntos);
+        // También actualizamos el cliente en el árbol AVL
+        rangosService.agregarCliente(cliente);
     }
 
     static _determinarRango(puntos) { // Este método es privado y solo calcula el rango
-        if (puntos >= 5001) return "Platino";
-        if (puntos >= 1001) return "Oro";
-        if (puntos >= 501) return "Plata";
-        return "Bronce";
+        // Delegamos la determinación del rango al RangosService
+        return rangosService.determinarRango(puntos);
     }
 
     static recalcularPuntosYRangos(idCliente) {
-        const cliente = ClienteService.obtenerClienteActual(); // Obtener la instancia en memoria
+        let cliente = ClienteService.obtenerClienteActual(); // Obtener la instancia en memoria
         if (!cliente || cliente.id !== idCliente) {
             // Si no es el cliente actual, lo buscamos en Storage
             const clienteDesdeStorage = Storage.buscarCliente(idCliente);
@@ -193,9 +209,16 @@ class ClienteService {
                 puntosCalculados += Math.floor(transaccion.monto / 100) * 3;
             }
         });
+        
+        // Actualizar puntos y rango en el cliente
         cliente.puntos = puntosCalculados;
-        cliente.rango = ClienteService._determinarRango(puntosCalculados);
-        ClienteService.guardarClienteActualEnLocalStorage(); // Guardar cambios
+        
+        // Usar RangosService para determinar el rango y actualizar en el árbol AVL
+        cliente.rango = rangosService.determinarRango(puntosCalculados);
+        rangosService.actualizarPuntosCliente(cliente.id, puntosCalculados);
+        
+        // Guardar los cambios
+        ClienteService.guardarClienteActualEnLocalStorage();
     }
 
     static obtenerMultiplicadorPuntosPorRango(rango) {
@@ -314,8 +337,20 @@ static transferirEntreMonederos(idCliente, idOrigen, idDestino, monto) {
     static obtenerTodosLosClientes() {
         return Storage.obtenerTodosLosClientes();
     }
-
-
+    
+    static limpiarHistorialTransacciones() {
+        const cliente = ClienteService.obtenerClienteActual();
+        if (cliente) {
+            // Limpiamos el historial de transacciones pero mantenemos el saldo actual
+            cliente.historialTransacciones = [];
+            // También limpiamos la pila de transacciones reversibles
+            cliente.pilaTransaccionesReversibles = new PilaTransacciones();
+            // Guardamos los cambios
+            ClienteService.guardarClienteActualEnLocalStorage();
+            return true;
+        }
+        return false;
+    }
 }
 
 // Llama a inicializarClienteActual tan pronto como el script se cargue,

@@ -14,9 +14,9 @@
                     <li><a href="dashboard.html">Dashboard</a></li>
                     <li><a href="transactions.html">Transacciones</a></li>
                     <li><a href="historial.html">Historial</a></li>
-                    <li><a href="notificaciones.html">Notificaciones</a></li>
-                    <li><a href="configuracion.html">Configuración</a></li>
+                    <li><a href="notificaciones.html" class="active">Notificaciones</a></li>
                     <li><a href="monedero.html">Monederos</a></li>
+                    <li><a href="beneficios.html">Beneficios</a></li>
                     <li><a href="analisisGasto.html">Análisis de Gasto</a></li>
 
             </ul>
@@ -33,6 +33,7 @@
 
             <div class="notifications-actions">
                 <button id="marcarTodasLeidasBtn">Marcar todas como leídas</button>
+                <button id="limpiarTodasNotificacionesBtn" class="clear-button">Limpiar todas</button>
             </div>
 
             <ul id="notificacionesList" class="notifications-list">
@@ -46,5 +47,7 @@
     </footer>
 
     <script type="module" src="../js/ui/logout.js"></script>
-    <script type="module" src="../js/ui/notificaciones.js"></script> </body>
+    <script type="module" src="../js/ui/notificaciones.js"></script>
+    <script type="module" src="../js/ui/notification-indicator.js"></script>
+</body>
 </html>

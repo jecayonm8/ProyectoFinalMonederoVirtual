@@ -1,17 +1,95 @@
 /* Heredamos estilos del dashboard.css para el body, header, footer */
 
+/* Estilos para la sección de notificaciones */
+.notifications-section {
+    background: #4d78c1; /* Azul sólido como en las otras tarjetas */
+    padding: 1.5rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    max-width: 800px;
+    width: 90%;
+    margin: 2rem auto;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.notifications-section h3 {
+    font-size: 1.8rem;
+    color: #ffeb3b;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+#notificaciones-container {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 0.5rem;
+}
+
+.notification-item {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    word-break: break-word; /* Esta propiedad evita que el texto largo desborde */
+    overflow-wrap: break-word; /* Alternativa para navegadores más modernos */
+    text-align: left;
+}
+
+.notification-title {
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: #ffffff;
+}
+
+.notification-content {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.notification-time {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-top: 0.5rem;
+    text-align: right;
+    font-style: italic;
+}
+
+.notifications-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1rem;
+}
+
+.clear-button {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.clear-button:hover {
+    background-color: #d32f2f;
+    transform: translateY(-2px);
+}
+
 /* Estilos para la tarjeta de transacciones */
 .transaction-card {
-    background: rgba(255, 255, 255, 0.15);
+    background: #4d78c1; /* Azul sólido como en las otras tarjetas */
     padding: 2.5rem;
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(12px);
     max-width: 600px;
     width: 90%;
     text-align: center;
-    margin-top: 3rem; /* Margen superior para separarlo del header */
-    margin-bottom: 2rem;
+    margin: 2rem auto;
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .transaction-card h2 {
@@ -79,19 +157,69 @@
 
 /* Área de mensajes */
 .message-area {
-    margin-top: 1.5rem;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #fff;
+    margin-top: 1rem;
+    padding: 0.7rem 1rem;
+    border-radius: 8px;
+    font-weight: 500;
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    transform: translateY(-10px);
 }
 
-/* Colores para mensajes de éxito/error */
+.message-area.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 .message-area.success {
-    color: #8BC34A; /* Verde */
+    background-color: rgba(76, 175, 80, 0.2);
+    color: #4CAF50;
+    border: 1px solid #4CAF50;
 }
 
 .message-area.error {
-    color: #FF5252; /* Rojo */
+    background-color: rgba(244, 67, 54, 0.2);
+    color: #F44336;
+    border: 1px solid #F44336;
+}
+
+.message-area.transferencia-success {
+    background-color: rgba(33, 150, 243, 0.2);
+    color: #2196F3;
+    border: 1px solid #2196F3;
+    padding: 1rem;
+    text-align: center;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.message-area.deposito-success {
+    background-color: rgba(76, 175, 80, 0.2);
+    color: #4CAF50;
+    border: 1px solid #4CAF50;
+    padding: 1rem;
+    text-align: center;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.message-area.retiro-success {
+    background-color: rgba(255, 152, 0, 0.2);
+    color: #FF9800;
+    border: 1px solid #FF9800;
+    padding: 1rem;
+    text-align: center;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.message-area.procesando {
+    background-color: rgba(255, 193, 7, 0.2);
+    color: #FFC107;
+    border: 1px solid #FFC107;
+    padding: 0.7rem;
+    text-align: center;
+    font-size: 1rem;
 }
 
 /* Responsividad */

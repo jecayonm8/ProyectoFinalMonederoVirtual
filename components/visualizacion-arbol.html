@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualización de Árboles | Monedero Virtual</title>
+    <link rel="stylesheet" href="../styles/reset.css">
+    <link rel="stylesheet" href="../styles/global.css">
+    <link rel="stylesheet" href="../styles/dashboards.css">
+    <link rel="stylesheet" href="../styles/visualizacion-arbol.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <h1>VISUALIZACIÓN DE ÁRBOLES</h1>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="transactions.html">Transacciones</a></li>
+                <li><a href="historial.html">Historial</a></li>
+                <li><a href="monederos.html">Monederos</a></li>
+                <li><a href="notificaciones.html">Notificaciones</a></li>
+                <li><a href="beneficios.html">Beneficios</a></li>
+                <li><a href="configuracion.html">Configuración</a></li>
+                <li><a href="analisisGasto.html">Análisis de Gasto</a></li>
+                <li><a href="ranking.html">Ranking</a></li>
+                <li class="active"><a href="visualizacion-arbol.html">Árboles</a></li>
+            </ul>
+        </nav>
+        <button id="cerrarSesionBtn" class="header-button">Cerrar Sesión</button>
+    </header>
+
+    <main>
+        <section class="tree-visualization-card">
+            <h2>Visualización del Árbol AVL de Clientes</h2>
+            <div id="mensajeVisualizacion" class="mensaje"></div>
+
+            <div class="controls-container">
+                <div class="tree-info">
+                    <h3>Información del Árbol</h3>
+                    <div id="tree-stats">
+                        <p>Total de nodos: <span id="total-nodos">0</span></p>
+                        <p>Profundidad máxima: <span id="profundidad-maxima">0</span></p>
+                        <p>Nodos por rango:</p>
+                        <ul>
+                            <li>Platino: <span id="nodos-platino">0</span></li>
+                            <li>Oro: <span id="nodos-oro">0</span></li>
+                            <li>Plata: <span id="nodos-plata">0</span></li>
+                            <li>Bronce: <span id="nodos-bronce">0</span></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="tree-controls">
+                    <button id="btn-generar-muestra" class="control-button">Generar Datos de Muestra</button>
+                    <button id="btn-toggle-detalles" class="control-button">Mostrar/Ocultar Detalles</button>
+                    <div class="zoom-controls">
+                        <button id="btn-zoom-in" class="control-button zoom-button">+</button>
+                        <button id="btn-zoom-out" class="control-button zoom-button">-</button>
+                        <button id="btn-zoom-reset" class="control-button zoom-button">Reset</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="canvas-container">
+                <canvas id="tree-canvas" width="1200" height="800"></canvas>
+            </div>
+
+            <div class="tree-legend">
+                <h3>Leyenda</h3>
+                <ul>
+                    <li><span class="legend-color platino"></span> Platino</li>
+                    <li><span class="legend-color oro"></span> Oro</li>
+                    <li><span class="legend-color plata"></span> Plata</li>
+                    <li><span class="legend-color bronce"></span> Bronce</li>
+                </ul>
+                <p><small>* Cada nodo muestra puntos y rango del cliente</small></p>
+                <p><small>* Los números en los nodos indican el factor de equilibrio</small></p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2025 Monedero Virtual - Todos los derechos reservados.</p>
+    </footer>
+
+    <script type="module" src="../js/ui/visualizacion-arbol.js"></script>
+    <script type="module" src="../js/ui/logout.js"></script>
+</body>
+</html>

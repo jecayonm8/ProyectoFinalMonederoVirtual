@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const clienteActualInfoDiv = document.getElementById("clienteActualInfo");
     const notificacionesList = document.getElementById("notificacionesList");
     const marcarTodasLeidasBtn = document.getElementById("marcarTodasLeidasBtn");
+    const limpiarTodasNotificacionesBtn = document.getElementById("limpiarTodasNotificacionesBtn");
 
     const clienteLogueado = ClienteService.obtenerClienteActual();
 
@@ -81,6 +82,17 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
         renderNotificaciones(); // Volver a renderizar para actualizar el estado visual
+    });
+
+    // Manejador de eventos para el botón "Limpiar todas las notificaciones"
+    limpiarTodasNotificacionesBtn.addEventListener('click', () => {
+        if (confirm('¿Está seguro que desea eliminar todas las notificaciones?')) {
+            const resultado = NotificacionService.limpiarTodasLasNotificaciones();
+            if (resultado) {
+                renderNotificaciones(); // Actualizar la interfaz
+                notificacionesList.innerHTML = '<li>Se han eliminado todas las notificaciones.</li>';
+            }
+        }
     });
 
 

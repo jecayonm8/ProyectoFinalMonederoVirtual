@@ -15,8 +15,8 @@
                     <li><a href="transactions.html">Transacciones</a></li>
                     <li><a href="historial.html">Historial</a></li>
                     <li><a href="notificaciones.html">Notificaciones</a></li>
-                    <li><a href="configuracion.html">Configuración</a></li>
                     <li><a href="monedero.html">Monederos</a></li>
+                    <li><a href="beneficios.html">Beneficios</a></li>
                     <li><a href="analisisGasto.html">Análisis de Gasto</a></li>
             </ul>
         </nav>
@@ -33,66 +33,143 @@
 
 
         <section class="points-info-card">
-            <h2>SISTEMA DE PUNTOS Y RANGOS</h2>
-            <p>¡Gana puntos con tus transacciones y desbloquea beneficios exclusivos!</p>
-            
-            <h3>¿Cómo ganar puntos?</h3>
-            <ul>
-                <li>**Depósitos:** 1 punto por cada 100 unidades depositadas.</li>
-                <li>**Retiros:** 2 puntos por cada 100 unidades retiradas.</li>
-                <li>**Transferencias (al que envía):** 3 puntos por cada 100 unidades transferidas.</li>
-            </ul>
-
-            <h3>Nuestros Rangos de Cliente:</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Rango</th>
-                        <th>Puntos Requeridos</th>
-                        <th>Beneficios</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Bronce</td>
-                        <td>0 - 500 puntos</td>
-                        <td>Acceso básico al monedero (1.0x puntos)</td>
-                    </tr>
-                    <tr>
-                        <td>Plata</td>
-                        <td>501 - 1000 puntos</td>
-                        <td>Bono de puntos del 10% (1.1x puntos)</td>
-                    </tr>
-                    <tr>
-                        <td>Oro</td>
-                        <td>1001 - 5000 puntos</td>
-                        <td>Bono de puntos del 25% + 10% descuento en canjes (1.25x puntos)</td>
-                    </tr>
-                    <tr>
-                        <td>Platino</td>
-                        <td>Más de 5000 puntos</td>
-                        <td>Bono de puntos del 50% + 20% descuento en canjes (1.5x puntos)</td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-
-        <section class="benefits-exchange-card">
-            <h2>CANJE DE BENEFICIOS</h2>
-            <p>¡Usa tus puntos para obtener descuentos y beneficios especiales!</p>
-            
-            <div class="benefits-container" id="beneficiosContainer">
-                <p>Cargando beneficios disponibles...</p>
+            <div class="card-header">
+                <div class="header-icon">✨</div>
+                <h2>SISTEMA DE PUNTOS Y RANGOS</h2>
             </div>
+            <p class="card-intro">¡Gana puntos con tus transacciones y desbloquea beneficios exclusivos!</p>
             
-            <div class="active-benefits" id="beneficiosActivos">
-                <h3>Beneficios Activos</h3>
-                <div id="listaBeneficiosActivos">
-                    <p>No tienes beneficios activos.</p>
+            <div class="points-earning-section">
+                <h3>¿Cómo ganar puntos?</h3>
+                <div class="earn-points-container">
+                    <div class="earn-point-item">
+                        <div class="point-icon deposit-icon">💰</div>
+                        <div class="point-info">
+                            <h4>Depósitos</h4>
+                            <p>1 punto por cada 100 unidades depositadas</p>
+                        </div>
+                    </div>
+                    <div class="earn-point-item">
+                        <div class="point-icon withdraw-icon">💸</div>
+                        <div class="point-info">
+                            <h4>Retiros</h4>
+                            <p>2 puntos por cada 100 unidades retiradas</p>
+                        </div>
+                    </div>
+                    <div class="earn-point-item">
+                        <div class="point-icon transfer-icon">↗️</div>
+                        <div class="point-info">
+                            <h4>Transferencias</h4>
+                            <p>3 puntos por cada 100 unidades transferidas</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ranks-section">
+                <h3>Nuestros Rangos de Cliente</h3>
+                <div class="ranks-container">
+                    <div class="rank-card bronze">
+                        <div class="rank-header">
+                            <div class="rank-icon">🥉</div>
+                            <h4>Bronce</h4>
+                        </div>
+                        <div class="rank-points">0 - 500 puntos</div>
+                        <div class="rank-benefits">Acceso básico al monedero <br>(1.0x puntos)</div>
+                    </div>
+                    
+                    <div class="rank-card silver">
+                        <div class="rank-header">
+                            <div class="rank-icon">🥈</div>
+                            <h4>Plata</h4>
+                        </div>
+                        <div class="rank-points">501 - 1000 puntos</div>
+                        <div class="rank-benefits">Bono de puntos del 10% <br>(1.1x puntos)</div>
+                    </div>
+                    
+                    <div class="rank-card gold">
+                        <div class="rank-header">
+                            <div class="rank-icon">🥇</div>
+                            <h4>Oro</h4>
+                        </div>
+                        <div class="rank-points">1001 - 5000 puntos</div>
+                        <div class="rank-benefits">Bono de puntos del 25% <br>+ 10% descuento en canjes <br>(1.25x puntos)</div>
+                    </div>
+                    
+                    <div class="rank-card platinum">
+                        <div class="rank-header">
+                            <div class="rank-icon">💎</div>
+                            <h4>Platino</h4>
+                        </div>
+                        <div class="rank-points">Más de 5000 puntos</div>
+                        <div class="rank-benefits">Bono de puntos del 50% <br>+ 20% descuento en canjes <br>(1.5x puntos)</div>
+                    </div>
                 </div>
             </div>
         </section>
-        </main>
+
+        <section class="dashboard-benefits-card">
+            <h2>BENEFICIOS DISPONIBLES</h2>
+            <p>¡Tienes puntos acumulados para canjear por beneficios exclusivos!</p>
+            <div class="dashboard-benefits-summary">
+                <div class="summary-item">
+                    <span class="summary-icon">🎁</span>
+                    <p>Ve a la sección de <a href="beneficios.html" class="highlight-link">Beneficios</a> para canjear tus puntos por descuentos y promociones exclusivas.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="tree-visualization-card">
+            <div class="card-header">
+                <div class="header-icon">🌳</div>
+                <h2>VISUALIZACIÓN DEL ÁRBOL AVL</h2>
+            </div>
+            <p class="card-intro">Visualiza el árbol AVL que mantiene los rangos de los clientes según sus puntos acumulados.</p>
+
+            
+            <div class="controls-container">
+                <div class="tree-info">
+                    <h3>Información del Árbol</h3>
+                    <div id="tree-stats">
+                        <p>Total de nodos: <span id="total-nodos">0</span></p>
+                        <p>Profundidad máxima: <span id="profundidad-maxima">0</span></p>
+                        <p>Nodos por rango:</p>
+                        <ul>
+                            <li>Platino: <span id="nodos-platino">0</span></li>
+                            <li>Oro: <span id="nodos-oro">0</span></li>
+                            <li>Plata: <span id="nodos-plata">0</span></li>
+                            <li>Bronce: <span id="nodos-bronce">0</span></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="tree-controls">
+                    <button id="btn-generar-muestra" class="control-button">Actualizar Árbol</button>
+                    <button id="btn-toggle-detalles" class="control-button">Mostrar/Ocultar Detalles</button>
+                    <div class="zoom-controls">
+                        <button id="btn-zoom-in" class="control-button zoom-button">+</button>
+                        <button id="btn-zoom-out" class="control-button zoom-button">-</button>
+                        <button id="btn-zoom-reset" class="control-button zoom-button">Reset</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tree-canvas-container">
+                <canvas id="tree-canvas" width="1000" height="600"></canvas>
+            </div>
+
+            <div class="tree-legend">
+                <h3>Leyenda</h3>
+                <ul>
+                    <li><span class="legend-color platino"></span> Platino</li>
+                    <li><span class="legend-color oro"></span> Oro</li>
+                    <li><span class="legend-color plata"></span> Plata</li>
+                    <li><span class="legend-color bronce"></span> Bronce</li>
+                </ul>
+                <p><small>* Cada nodo muestra puntos y rango del cliente</small></p>
+                <p><small>* Los números en los nodos indican el factor de equilibrio</small></p>
+            </div>
+        </section>
+    </main>
 
     <footer>
         <p>© 2025 Monedero Virtual - Todos los derechos reservados.</p>
@@ -100,5 +177,6 @@
 
     <script type="module" src="../js/ui/logout.js"></script>
     <script type="module" src="../js/ui/dashboard.js"></script>
+    <script type="module" src="../js/ui/notification-indicator.js"></script>
 </body>
 </html>

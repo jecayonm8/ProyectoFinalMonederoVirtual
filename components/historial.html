@@ -12,10 +12,10 @@
             <ul>
                     <li><a href="dashboard.html">Dashboard</a></li>
                     <li><a href="transactions.html">Transacciones</a></li>
-                    <li><a href="historial.html">Historial</a></li>
+                    <li><a href="historial.html" class="active">Historial</a></li>
                     <li><a href="notificaciones.html">Notificaciones</a></li>
-                    <li><a href="configuracion.html">Configuración</a></li>
                     <li><a href="monedero.html">Monederos</a></li>
+                    <li><a href="beneficios.html">Beneficios</a></li>
                     <li><a href="analisisGasto.html">Análisis de Gasto</a></li>
 
             </ul>
@@ -26,6 +26,9 @@
     <main>
         <section class="historial-card">
             <h2>Todas tus Transacciones</h2>
+            <div class="historial-actions">
+                <button id="limpiarHistorialBtn" class="clear-button">Limpiar historial</button>
+            </div>
             <div class="table-container">
                 <table id="historialTable">
                     <thead>
@@ -55,5 +58,7 @@
     </footer>
 
     <script type="module" src="../js/ui/logout.js"></script>
-    <script type="module" src="../js/ui/historial.js"></script> </body>
+    <script type="module" src="../js/ui/historial.js"></script>
+    <script type="module" src="../js/ui/notification-indicator.js"></script>
+</body>
 </html>

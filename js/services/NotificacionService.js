@@ -58,6 +58,17 @@ class NotificacionService {
         return false;
     }
 
+    static limpiarTodasLasNotificaciones() {
+        const cliente = ClienteService.obtenerClienteActual();
+        if (cliente && cliente.notificaciones instanceof ListaCircular) {
+            // Reinicializamos la lista circular de notificaciones
+            cliente.notificaciones = new ListaCircular(NotificacionService.CAPACIDAD_NOTIFICACIONES);
+            ClienteService.guardarClienteActualEnLocalStorage();
+            return true;
+        }
+        return false;
+    }
+
     static generarRecordatorioTransaccionesProgramadas(idCliente) {
         const cliente = ClienteService.obtenerClienteActual(); // Usar obtenerClienteActual para la instancia viva
         if (!cliente || cliente.id !== idCliente) {

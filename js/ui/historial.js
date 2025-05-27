@@ -3,6 +3,7 @@ import ClienteService from "../services/ClienteService.js";
 document.addEventListener("DOMContentLoaded", () => {
     const historialTableBody = document.querySelector("#historialTable tbody");
     const mensajeHistorialDiv = document.getElementById("mensajeHistorial");
+    const limpiarHistorialBtn = document.getElementById("limpiarHistorialBtn");
 
     function cargarHistorialTransacciones() {
         const clienteActual = ClienteService.obtenerClienteActual();
@@ -81,6 +82,27 @@ document.addEventListener("DOMContentLoaded", () => {
                 <td>${origenDestino}</td>
                 <td>${transaccion.tipoCuenta || 'N/A'}</td> <td>${transaccion.metodoPago || 'N/A'}</td> `;
             historialTableBody.appendChild(row);
+        });
+    }
+
+    // Manejador de eventos para el botón de limpiar historial
+    if (limpiarHistorialBtn) {
+        limpiarHistorialBtn.addEventListener('click', () => {
+            if (confirm('¿Está seguro que desea eliminar todo el historial de transacciones? Esta acción no puede deshacerse.')) {
+                const resultado = ClienteService.limpiarHistorialTransacciones();
+                if (resultado) {
+                    // Mostrar mensaje de éxito
+                    mensajeHistorialDiv.textContent = "Historial de transacciones eliminado correctamente.";
+                    mensajeHistorialDiv.classList.remove("error");
+                    mensajeHistorialDiv.classList.add("success");
+                    // Actualizar la tabla
+                    historialTableBody.innerHTML = '<tr><td colspan="7" class="no-transactions-message">No hay transacciones registradas.</td></tr>';
+                } else {
+                    mensajeHistorialDiv.textContent = "Error al intentar eliminar el historial.";
+                    mensajeHistorialDiv.classList.remove("success");
+                    mensajeHistorialDiv.classList.add("error");
+                }
+            }
         });
     }
 

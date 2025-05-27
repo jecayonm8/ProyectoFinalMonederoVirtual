@@ -1,16 +1,38 @@
 /* Puedes copiar algunos estilos base de dashboard.css si quieres un look similar para la sección */
 .historial-card {
-    background: rgba(255, 255, 255, 0.15);
+    background: #4d78c1; /* Azul sólido como en las otras tarjetas */
     padding: 2.5rem;
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(12px);
-    margin-top: 2rem;
+    margin: 2rem auto;
     width: 90%;
     max-width: 1000px; /* Un poco más ancha para la tabla de historial */
     text-align: center;
     color: #fff;
     overflow-x: auto; /* Permite scroll horizontal en pantallas pequeñas */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.historial-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+}
+
+.clear-button {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.clear-button:hover {
+    background-color: #d32f2f;
+    transform: translateY(-2px);
 }
 
 .historial-card h2 {
