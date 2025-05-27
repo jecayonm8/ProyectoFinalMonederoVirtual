@@ -73,11 +73,26 @@ class TransaccionService {
         if (monto <= 0) {
             return "Error: El monto del retiro debe ser positivo.";
         }
-        if (cliente.saldo < monto) {
-            return "Error: Saldo insuficiente.";
+        
+        // Calcular cargo por retiro: $5 o 1% del monto, el que sea menor
+        let cargo = Math.min(5, monto * 0.01);
+        let cargoFinal = cargo;
+        
+        // Verificar si hay beneficios activos que reduzcan el cargo
+        if (cliente.beneficiosActivos && cliente.beneficiosActivos.length > 0) {
+            const resultadoBeneficio = ClienteService.aplicarBeneficioEnTransaccion('retiro', monto);
+            if (resultadoBeneficio && resultadoBeneficio.descuento > 0) {
+                cargoFinal = Math.max(0, cargo - resultadoBeneficio.descuento);
+            }
+        }
+        
+        // Verificar si hay saldo suficiente para el monto y el cargo
+        if (cliente.saldo < (monto + cargoFinal)) {
+            return `Error: Saldo insuficiente para el retiro y el cargo (Retiro: $${monto.toFixed(2)}, Cargo: $${cargoFinal.toFixed(2)}).`;
         }
 
-        cliente.saldo -= monto;
+        const montoTotal = monto + cargoFinal;
+        cliente.saldo -= montoTotal;
         const idTransaccion = TransaccionService.generarIdTransaccion();
         const transaccion = new Transaccion(
             idTransaccion,
@@ -90,13 +105,18 @@ class TransaccionService {
             null, // metodoPago
             categoria
         );
+        // Guardar el cargo en la transacción
+        transaccion.cargo = cargoFinal;
+        transaccion.montoTotal = montoTotal;
+        
         ClienteService.agregarTransaccionACliente(cliente.id, transaccion); // Ya agrega a historial y pila
 
         // Actualizar puntos
         ClienteService.actualizarPuntosPorTransaccion(cliente.id, transaccion);
 
         // Notificaciones:
-        const mensajeConfirmacion = `Retiro de $${monto.toFixed(2)} realizado con éxito. Nuevo saldo: $${cliente.saldo.toFixed(2)}.`;
+        let detallesCargo = cargoFinal > 0 ? ` (Cargo por retiro: $${cargoFinal.toFixed(2)})` : " (Sin cargo por retiro)";
+        const mensajeConfirmacion = `Retiro de $${monto.toFixed(2)} realizado con éxito${detallesCargo}. Nuevo saldo: $${cliente.saldo.toFixed(2)}.`;
         NotificacionService.agregarNotificacion(cliente.id, new Notificacion(mensajeConfirmacion, 'informativo', transaccion.id));
         NotificacionService.generarAlertaSaldoBajo(cliente.id); // Verifica si necesita alerta de saldo bajo
 
@@ -126,35 +146,55 @@ class TransaccionService {
         if (!clienteOrigen || !clienteDestino) {
             return "Error: Cliente de origen o destino no encontrado.";
         }
-
-        // Verificar y aplicar beneficios activos
-        let montoFinal = monto;
-        let descuentoAplicado = 0;
+        
+        // Calcular comisión por transferencia: 3% del monto
+        // Aplicar comisión del 12% al monto de la transferencia
+        const comisionBase = monto * 0.12;
+        let comisionFinal = comisionBase;
         let beneficioUsado = null;
         let mensajeBeneficio = "";
 
         try {
+            // Verificar y aplicar beneficios activos para reducir la comisión
             const resultadoBeneficio = await ClienteService.aplicarBeneficioEnTransaccion('transferencia', monto);
             if (resultadoBeneficio && resultadoBeneficio.descuento > 0) {
-                descuentoAplicado = resultadoBeneficio.descuento;
+                const descuentoComision = resultadoBeneficio.descuento;
+                // Mantener beneficioUsado para compatibilidad con código existente
                 beneficioUsado = resultadoBeneficio.beneficioUsado;
-                montoFinal = Math.max(0, monto - descuentoAplicado);
+                comisionFinal = Math.max(0, comisionBase - descuentoComision);
                 
-                if (beneficioUsado) {
-                    mensajeBeneficio = ` ¡Beneficio aplicado: ${beneficioUsado.nombre}! Descuento: $${descuentoAplicado.toFixed(2)}.`;
+                // Mostrar todos los beneficios usados
+                if (resultadoBeneficio.beneficiosUsados && resultadoBeneficio.beneficiosUsados.length > 0) {
+                    mensajeBeneficio = ` ¡Beneficios aplicados: `;
+                    
+                    // Concatenar todos los beneficios aplicados
+                    resultadoBeneficio.beneficiosUsados.forEach((beneficio, index) => {
+                        mensajeBeneficio += `${beneficio.nombre}`;
+                        // Agregar coma si no es el último beneficio
+                        if (index < resultadoBeneficio.beneficiosUsados.length - 1) {
+                            mensajeBeneficio += `, `;
+                        }
+                    });
+                    
+                    mensajeBeneficio += `! Ahorro total en comisión: $${descuentoComision.toFixed(2)}.`;
                 }
             }
         } catch (error) {
             console.warn('Error al aplicar beneficios:', error);
         }
 
-        if (clienteOrigen.saldo < montoFinal) {
-            return "Error: Saldo insuficiente en la cuenta de origen.";
+        // Calcular el monto total que necesita el cliente (monto + comisión)
+        const montoTotal = monto + comisionFinal;
+
+        if (clienteOrigen.saldo < montoTotal) {
+            return `Error: Saldo insuficiente en la cuenta de origen para cubrir el monto y la comisión (Monto: $${monto.toFixed(2)}, Comisión: $${comisionFinal.toFixed(2)}).`;
         }
 
-        // Realizar la transferencia con el monto final (después del descuento)
-        clienteOrigen.saldo -= montoFinal;
+        // Realizar la transferencia con el monto y la comisión
+        clienteOrigen.saldo -= montoTotal; // Monto + comisión
         clienteDestino.saldo += monto; // El destinatario recibe el monto completo
+        
+        // Nota: La comisión ($${comisionFinal.toFixed(2)}) se queda con el banco y no va al destinatario
 
         const idTransaccion = TransaccionService.generarIdTransaccion();
         const fechaTransaccion = new Date();
@@ -171,6 +211,9 @@ class TransaccionService {
             null,
             categoria
         );
+        // Guardar la comisión en la transacción
+        transaccionOrigen.comision = comisionFinal;
+        transaccionOrigen.montoTotal = montoTotal;
         ClienteService.agregarTransaccionACliente(clienteOrigen.id, transaccionOrigen); // Agrega a historial y pila
         ClienteService.actualizarPuntosPorTransaccion(clienteOrigen.id, transaccionOrigen);
 
@@ -190,18 +233,35 @@ class TransaccionService {
         // No se actualizan puntos para recepciones por defecto, pero podrías añadirlo si tu lógica lo requiere.
 
         // Notificaciones para ambas partes de la transferencia:
-        const mensajeOrigen = `Transferencia de $${monto.toFixed(2)} a ${clienteDestino.nombre} (ID: ${idClienteDestino}) realizada.${mensajeBeneficio} Costo final: $${montoFinal.toFixed(2)}. Nuevo saldo: $${clienteOrigen.saldo.toFixed(2)}.`;
+        let detallesComision = comisionFinal > 0 ? ` (Comisión: $${comisionFinal.toFixed(2)})` : " (Sin comisión)";
+        const mensajeOrigen = `Transferencia de $${monto.toFixed(2)} a ${clienteDestino.nombre} (ID: ${idClienteDestino}) realizada.${mensajeBeneficio}${detallesComision} Nuevo saldo: $${clienteOrigen.saldo.toFixed(2)}.`;
         NotificacionService.agregarNotificacion(idClienteOrigen, new Notificacion(mensajeOrigen, 'informativo', transaccionOrigen.id));
         NotificacionService.generarAlertaSaldoBajo(idClienteOrigen); // Verifica saldo del origen
 
-        NotificacionService.agregarNotificacion(idClienteDestino, new Notificacion(`Has recibido $${monto.toFixed(2)} de ${clienteOrigen.nombre} (ID: ${idClienteOrigen}). Nuevo saldo: $${clienteDestino.saldo.toFixed(2)}.`, 'informativo', transaccionDestino.id));
+        // Notificación mejorada para el destinatario
+        const fechaHora = new Date().toLocaleString();
+        const categoriaTransf = categoria ? `Categoría: ${categoria}` : 'Sin categoría';
+        const mensajeDestino = `¡Has recibido una transferencia! \n\n` +
+                              `• Monto: $${monto.toFixed(2)} \n` +
+                              `• Remitente: ${clienteOrigen.nombre} (ID: ${idClienteOrigen}) \n` +
+                              `• Fecha y hora: ${fechaHora} \n` +
+                              `• ${categoriaTransf} \n` +
+                              `• Nuevo saldo: $${clienteDestino.saldo.toFixed(2)}`;
+                              
+        // Enviamos la notificación como importante para que destaque
+        NotificacionService.agregarNotificacion(idClienteDestino, new Notificacion(mensajeDestino, 'importante', transaccionDestino.id));
+        
+        // También actualizamos los puntos del destinatario si recibe una transferencia
+        // Esto permite que gane puntos por recibir transferencias
+        ClienteService.actualizarPuntosPorTransaccion(idClienteDestino, transaccionDestino);
+        
         NotificacionService.generarAlertaSaldoBajo(idClienteDestino); // Verifica saldo del destino
 
         Storage.guardarDatos(); // Guardar explícitamente después de todas las operaciones
         
         let mensajeRetorno = `Transferencia de ${monto.toFixed(2)} a ${idClienteDestino} realizada con éxito.`;
-        if (descuentoAplicado > 0) {
-            mensajeRetorno += ` ${mensajeBeneficio} Costo final: $${montoFinal.toFixed(2)}.`;
+        if (comisionFinal > 0) {
+            mensajeRetorno += ` ${mensajeBeneficio} Comisión: $${comisionFinal.toFixed(2)}.`;
         }
         
         return mensajeRetorno;
@@ -286,15 +346,36 @@ class TransaccionService {
             );
 
             // Recalcular puntos y rango después de la reversión
-            ClienteService.recalcularPuntosYRangos(cliente.id); // Asegúrate de que este método existe y funciona correctamente.
+            const clienteActualizado = ClienteService.recalcularPuntosYRangos(cliente.id);
 
             // Notificación de reversión exitosa
             NotificacionService.agregarNotificacion(idCliente, new Notificacion(mensajeReversion, 'informativo', transaccionARevertir.id));
+            
+            // Notificación sobre los puntos actualizados
+            if (clienteActualizado) {
+                const mensajePuntos = `Tus puntos han sido recalculados. Puntos actuales: ${clienteActualizado.puntos}. Rango: ${clienteActualizado.rango}.`;
+                NotificacionService.agregarNotificacion(idCliente, new Notificacion(mensajePuntos, 'informativo', null));
+            }
+            
             NotificacionService.generarAlertaSaldoBajo(idCliente); // Verifica saldo del cliente después de la reversión
 
-            // Si la reversión fue de una transferencia, también notificar al cliente destino
+            // Si la reversión fue de una transferencia, también notificar y recalcular para el cliente destino
             if (transaccionARevertir.tipo === "transferencia" && transaccionARevertir.idClienteDestino) {
-                NotificacionService.agregarNotificacion(transaccionARevertir.idClienteDestino, new Notificacion(`Se ha revertido una transacción recibida de $${transaccionARevertir.monto.toFixed(2)} de ${idCliente}. Tu saldo ha sido ajustado.`, 'alerta', transaccionARevertir.id));
+                // Recalcular puntos del cliente destino
+                const clienteDestinoActualizado = ClienteService.recalcularPuntosYRangos(transaccionARevertir.idClienteDestino);
+                
+                // Notificación principal sobre la reversión
+                NotificacionService.agregarNotificacion(transaccionARevertir.idClienteDestino, 
+                    new Notificacion(`Se ha revertido una transacción recibida de $${transaccionARevertir.monto.toFixed(2)} de ${idCliente}. Tu saldo ha sido ajustado.`, 
+                    'alerta', transaccionARevertir.id));
+                
+                // Notificación sobre los puntos actualizados para el cliente destino
+                if (clienteDestinoActualizado) {
+                    const mensajePuntosDestino = `Tus puntos han sido recalculados debido a una transacción revertida. Puntos actuales: ${clienteDestinoActualizado.puntos}. Rango: ${clienteDestinoActualizado.rango}.`;
+                    NotificacionService.agregarNotificacion(transaccionARevertir.idClienteDestino, 
+                        new Notificacion(mensajePuntosDestino, 'informativo', null));
+                }
+                
                 NotificacionService.generarAlertaSaldoBajo(transaccionARevertir.idClienteDestino);
             }
         } else {
@@ -304,6 +385,150 @@ class TransaccionService {
 
         Storage.guardarDatos();
         return mensajeReversion;
+    }
+
+    /**
+     * Cancela una transacción específica por su ID desde el historial de un cliente
+     * @param {string} idCliente - ID del cliente que desea cancelar la transacción
+     * @param {string} idTransaccion - ID de la transacción a cancelar
+     * @returns {string} Mensaje de éxito o error
+     */
+    static cancelarTransaccion(idCliente, idTransaccion) {
+        const cliente = ClienteService.buscarClientePorId(idCliente);
+        if (!cliente) {
+            return "Error: Cliente no encontrado.";
+        }
+
+        // Buscar la transacción en el historial del cliente
+        const transaccion = cliente.historialTransacciones.find(t => t.id === idTransaccion);
+        if (!transaccion) {
+            return "Error: Transacción no encontrada en el historial.";
+        }
+
+        // Verificar si la transacción es reciente (menos de 24 horas)
+        const ahora = new Date();
+        const fechaTransaccion = new Date(transaccion.fecha);
+        const diferenciaHoras = (ahora - fechaTransaccion) / (1000 * 60 * 60);
+        
+        if (diferenciaHoras > 24) {
+            return "Error: Solo se pueden cancelar transacciones realizadas en las últimas 24 horas.";
+        }
+
+        let mensajeCancelacion = "";
+        let cancelacionExitosa = false;
+
+        switch (transaccion.tipo) {
+            case "deposito":
+                // Verificar si hay saldo suficiente para revertir el depósito
+                if (cliente.saldo >= transaccion.monto) {
+                    cliente.saldo -= transaccion.monto;
+                    mensajeCancelacion = `Depósito de $${transaccion.monto.toFixed(2)} cancelado exitosamente.`;
+                    cancelacionExitosa = true;
+                } else {
+                    mensajeCancelacion = `Error: Saldo insuficiente para cancelar el depósito de $${transaccion.monto.toFixed(2)}.`;
+                }
+                break;
+
+            case "retiro":
+                // Devolver el dinero a la cuenta
+                cliente.saldo += transaccion.monto;
+                mensajeCancelacion = `Retiro de $${transaccion.monto.toFixed(2)} cancelado exitosamente.`;
+                cancelacionExitosa = true;
+                break;
+
+            case "transferencia":
+                const clienteDestino = ClienteService.buscarClientePorId(transaccion.idClienteDestino);
+                if (!clienteDestino) {
+                    mensajeCancelacion = "Error: Cliente destino no encontrado. No se puede cancelar la transferencia.";
+                    break;
+                }
+
+                // Verificar si el destinatario tiene saldo suficiente para devolver
+                if (clienteDestino.saldo >= transaccion.monto) {
+                    // Revertir la transferencia
+                    clienteDestino.saldo -= transaccion.monto;
+                    
+                    // Devolver el monto completo (incluida la comisión) al remitente
+                    // Aquí asumimos que la comisión era el 12% al momento de la transferencia
+                    const comisionEstimada = transaccion.monto * 0.12;
+                    cliente.saldo += transaccion.monto + comisionEstimada;
+                    
+                    mensajeCancelacion = `Transferencia de $${transaccion.monto.toFixed(2)} a ${clienteDestino.nombre} cancelada exitosamente.`;
+                    cancelacionExitosa = true;
+                    
+                    // Agregar notificación al cliente destino
+                    if (NotificacionService) {
+                        NotificacionService.agregarNotificacion(
+                            transaccion.idClienteDestino, 
+                            {
+                                mensaje: `Una transferencia de $${transaccion.monto.toFixed(2)} recibida de ${cliente.nombre} ha sido cancelada.`,
+                                tipo: 'alerta',
+                                idReferencia: transaccion.id
+                            }
+                        );
+                    }
+                    
+                    // Eliminar la transacción del historial del destinatario
+                    clienteDestino.historialTransacciones = clienteDestino.historialTransacciones.filter(
+                        t => !(t.tipo === 'recepcion' && t.idClienteOrigen === idCliente && t.monto === transaccion.monto && new Date(t.fecha).getTime() === fechaTransaccion.getTime())
+                    );
+                } else {
+                    mensajeCancelacion = `Error: El destinatario no tiene saldo suficiente para devolver $${transaccion.monto.toFixed(2)}.`;
+                }
+                break;
+
+            case "recepcion":
+                mensajeCancelacion = "Error: Las recepciones de transferencias solo pueden ser canceladas por el remitente.";
+                break;
+
+            default:
+                mensajeCancelacion = "Error: Tipo de transacción desconocido.";
+        }
+
+        if (cancelacionExitosa) {
+            // Eliminar la transacción del historial
+            cliente.historialTransacciones = cliente.historialTransacciones.filter(t => t.id !== idTransaccion);
+            
+            // Recalcular puntos y rango del cliente después de cancelar la transacción
+            ClienteService.recalcularPuntosYRangos(idCliente);
+            
+            // Si fue una transferencia, también recalcular puntos del cliente destino
+            if (transaccion.tipo === "transferencia" && transaccion.idClienteDestino) {
+                ClienteService.recalcularPuntosYRangos(transaccion.idClienteDestino);
+            }
+            
+            // Agregar notificación sobre la cancelación
+            if (NotificacionService) {
+                // Notificación principal sobre la cancelación
+                NotificacionService.agregarNotificacion(
+                    idCliente, 
+                    new Notificacion(
+                        mensajeCancelacion,
+                        'informativo',
+                        transaccion.id
+                    )
+                );
+                
+                // Notificación adicional sobre los puntos actualizados
+                const clienteActualizado = ClienteService.buscarClientePorId(idCliente);
+                if (clienteActualizado) {
+                    const mensajePuntos = `Tus puntos han sido recalculados. Puntos actuales: ${clienteActualizado.puntos}. Rango: ${clienteActualizado.rango}.`;
+                    NotificacionService.agregarNotificacion(
+                        idCliente,
+                        new Notificacion(
+                            mensajePuntos,
+                            'informativo',
+                            null
+                        )
+                    );
+                }
+            }
+            
+            // Guardar los cambios
+            Storage.guardarDatos();
+        }
+
+        return mensajeCancelacion;
     }
 
     // Método para procesar transacciones programadas (si lo tienes)

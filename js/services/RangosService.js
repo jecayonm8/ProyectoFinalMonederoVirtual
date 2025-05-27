@@ -51,8 +51,17 @@ class RangosService {
             return false;
         }
 
-        // Actualizar puntos y rango
-        const resultado = this.arbolClientes.actualizarPuntos(idCliente, puntos);
+        // Guardar el rango actual antes de actualizar
+        const rangoActual = cliente.rango || 'Bronce';
+        
+        // Determinar el nuevo rango basado en puntos actuales
+        const nuevoRangoPorPuntos = this._calcularRangoBasadoEnPuntos(puntos);
+        
+        // El rango nunca baja, solo sube si el nuevo rango es mayor
+        const rangoFinal = this._obtenerRangoMayor(rangoActual, nuevoRangoPorPuntos);
+        
+        // Actualizar puntos en el árbol AVL y asignar el rango final
+        const resultado = this.arbolClientes.actualizarPuntos(idCliente, puntos, rangoFinal);
         
         // Persistir los cambios
         if (resultado) {
@@ -62,10 +71,13 @@ class RangosService {
                 const clienteActual = ClienteService.obtenerClienteActual();
                 if (clienteActual && clienteActual.id === idCliente) {
                     clienteActual.puntos = puntos;
-                    clienteActual.rango = clienteActualizado.rango;
+                    clienteActual.rango = rangoFinal;
+                    clienteActual.rangoMaximoAlcanzado = rangoFinal; // Guardar el rango máximo alcanzado
                     ClienteService.guardarClienteActualEnLocalStorage();
                 } else {
                     // Si no es el cliente actual, actualizar en storage
+                    clienteActualizado.rango = rangoFinal;
+                    clienteActualizado.rangoMaximoAlcanzado = rangoFinal;
                     Storage.actualizarCliente(clienteActualizado);
                 }
             }
@@ -112,7 +124,45 @@ class RangosService {
 
     // Determinar el rango según los puntos
     determinarRango(puntos) {
-        return this.arbolClientes.determinarRango(puntos);
+        // Obtener el cliente actual
+        const clienteActual = ClienteService.obtenerClienteActual();
+        
+        if (clienteActual) {
+            // Obtener el rango máximo alcanzado previamente (si existe)
+            const rangoMaximoAlcanzado = clienteActual.rangoMaximoAlcanzado || 'Bronce';
+            
+            // Calcular el rango basado solo en los puntos actuales
+            const rangoPorPuntos = this._calcularRangoBasadoEnPuntos(puntos);
+            
+            // Devolver el mayor entre el rango máximo alcanzado y el rango por puntos
+            return this._obtenerRangoMayor(rangoMaximoAlcanzado, rangoPorPuntos);
+        }
+        
+        // Si no hay cliente actual, simplemente calcular el rango basado en puntos
+        return this._calcularRangoBasadoEnPuntos(puntos);
+    }
+    
+    // Método auxiliar para calcular el rango basado solo en puntos
+    _calcularRangoBasadoEnPuntos(puntos) {
+        if (puntos >= 5000) return 'Platino';
+        if (puntos >= 1000) return 'Oro';
+        if (puntos >= 500) return 'Plata';
+        return 'Bronce';
+    }
+    
+    // Método auxiliar para obtener el rango mayor entre dos rangos
+    _obtenerRangoMayor(rango1, rango2) {
+        const valorRangos = {
+            'Bronce': 1,
+            'Plata': 2,
+            'Oro': 3,
+            'Platino': 4
+        };
+        
+        const valorRango1 = valorRangos[rango1] || 1;
+        const valorRango2 = valorRangos[rango2] || 1;
+        
+        return valorRango1 >= valorRango2 ? rango1 : rango2;
     }
     
     // Métodos para visualización gráfica

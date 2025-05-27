@@ -144,12 +144,172 @@ form button:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
+/* Estilos para la sección de acciones de monedero */
+.acciones-monedero {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.acciones-monedero select {
+    flex: 1 1 250px;
+    padding: 0.7rem;
+    border: none;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 1rem;
+    margin-right: 0.5rem;
+    outline: none;
+}
+
+.acciones-monedero button {
+    flex: 1 1 auto;
+    padding: 0.7rem 1rem;
+    border: none;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.25);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.acciones-monedero button:hover {
+    background: rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.acciones-monedero button#btnAgregarSaldo {
+    background: rgba(76, 175, 80, 0.5);
+}
+
+.acciones-monedero button#btnRetirarSaldo {
+    background: rgba(255, 152, 0, 0.5);
+}
+
+.acciones-monedero button#btnEliminarMonedero {
+    background: rgba(244, 67, 54, 0.5);
+}
+
+/* Formulario flotante para operaciones */
+.form-flotante {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.form-flotante.visible {
+    display: flex;
+}
+
+.form-flotante-contenido {
+    background: #4d78c1;
+    border-radius: 10px;
+    padding: 2rem;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.form-flotante h3 {
+    margin-top: 0;
+    color: white;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.form-flotante input {
+    width: 100%;
+    padding: 0.8rem;
+    margin-bottom: 1rem;
+    border: none;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+.form-flotante input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.form-flotante .botones {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+
+.form-flotante button {
+    padding: 0.7rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.form-flotante button.confirmar {
+    background: rgba(76, 175, 80, 0.8);
+    color: white;
+}
+
+.form-flotante button.cancelar {
+    background: rgba(244, 67, 54, 0.8);
+    color: white;
+}
+
+.form-flotante button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.mensaje-operacion {
+    margin-top: 1rem;
+    padding: 0.8rem;
+    border-radius: 6px;
+    text-align: center;
+    font-weight: 500;
+    display: none;
+}
+
+.mensaje-operacion.exito {
+    background-color: rgba(76, 175, 80, 0.2);
+    color: #4CAF50;
+    border: 1px solid #4CAF50;
+    display: block;
+}
+
+.mensaje-operacion.error {
+    background-color: rgba(244, 67, 54, 0.2);
+    color: #F44336;
+    border: 1px solid #F44336;
+    display: block;
+}
+
 /* Lista de monederos */
 #listaMonederos {
     margin-top: 2rem;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 1.5rem;
+    margin-bottom: 2rem;
 }
 
 #listaMonederos > div {

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grafo de Transacciones - Monedero Virtual</title>
+    <link rel="stylesheet" href="../styles/grafos.css">
+    <!-- Añadir D3.js para visualización de grafos -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>GRAFO DE TRANSACCIONES</h1>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="transactions.html">Transacciones</a></li>
+                <li><a href="historial.html">Historial</a></li>
+                <li><a href="notificaciones.html">Notificaciones</a></li>
+                <li><a href="monedero.html">Monederos</a></li>
+                <li><a href="beneficios.html">Beneficios</a></li>
+                <li><a href="analisisGasto.html">Análisis de Gasto</a></li>
+                <li><a href="grafoTransacciones.html" class="active">Grafo Transacciones</a></li>
+            </ul>
+        </nav>
+        <button id="cerrarSesionBtn" class="header-button">Cerrar Sesión</button>
+    </header>
+
+    <main>
+        <section class="graph-options-card">
+            <h2>OPCIONES DE VISUALIZACIÓN</h2>
+            <div class="graph-options">
+                <div class="option-group">
+                    <label for="graphType">Tipo de Grafo:</label>
+                    <select id="graphType">
+                        <option value="personal">Mis Transacciones</option>
+                        <option value="global">Todas las Transacciones</option>
+                    </select>
+                </div>
+                <div class="option-group">
+                    <label for="minWeight">Monto Mínimo:</label>
+                    <input type="range" id="minWeight" min="0" max="1000" step="10" value="0">
+                    <span id="minWeightValue">0</span>
+                </div>
+                <button id="refreshGraphBtn" class="action-button">Actualizar Grafo</button>
+            </div>
+        </section>
+
+        <section class="graph-visualization-card">
+            <h2>VISUALIZACIÓN DEL GRAFO</h2>
+            <div id="graphContainer" class="graph-container">
+                <!-- El grafo se renderizará aquí usando D3.js -->
+            </div>
+        </section>
+
+        <section class="graph-stats-card">
+            <h2>ESTADÍSTICAS DEL GRAFO</h2>
+            <div class="stats-container">
+                <div class="stats-group">
+                    <h3>Monederos con Más Transferencias</h3>
+                    <ul id="topWallets" class="stats-list"></ul>
+                </div>
+                <div class="stats-group">
+                    <h3>Rutas de Transferencia Más Frecuentes</h3>
+                    <ul id="topPaths" class="stats-list"></ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2025 Monedero Virtual - Todos los derechos reservados.</p>
+    </footer>
+
+    <script type="module" src="../js/ui/logout.js"></script>
+    <script type="module" src="../js/ui/grafoTransacciones.js"></script>
+    <script type="module" src="../js/ui/notification-indicator.js"></script>
+</body>
+</html>

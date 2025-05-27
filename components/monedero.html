@@ -6,6 +6,7 @@
     <title>Mis Monederos - Monedero Virtual</title>
     <link rel="stylesheet" href="../styles/dashboards.css">
     <link rel="stylesheet" href="../styles/monederos.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
     <header>
@@ -54,6 +55,62 @@
                 <button id="btnEliminarMonedero" type="button">Eliminar Monedero</button>
             </div>
 
+            <div id="mensajeOperacionMonedero" class="mensaje-operacion"></div>
+
+            <!-- Formulario flotante para agregar saldo -->
+            <div id="formAgregarSaldo" class="form-flotante">
+                <div class="form-flotante-contenido">
+                    <h3>Agregar Saldo</h3>
+                    <input type="number" id="montoAgregar" placeholder="Monto a agregar" min="0.01" step="0.01" required>
+                    <div class="botones">
+                        <button type="button" class="cancelar" id="cancelarAgregarSaldo">Cancelar</button>
+                        <button type="button" class="confirmar" id="confirmarAgregarSaldo">Confirmar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulario flotante para retirar saldo -->
+            <div id="formRetirarSaldo" class="form-flotante">
+                <div class="form-flotante-contenido">
+                    <h3>Retirar Saldo</h3>
+                    <input type="number" id="montoRetirar" placeholder="Monto a retirar" min="0.01" step="0.01" required>
+                    <div class="botones">
+                        <button type="button" class="cancelar" id="cancelarRetirarSaldo">Cancelar</button>
+                        <button type="button" class="confirmar" id="confirmarRetirarSaldo">Confirmar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulario flotante para confirmar eliminación -->
+            <div id="formEliminarMonedero" class="form-flotante">
+                <div class="form-flotante-contenido">
+                    <h3>Eliminar Monedero</h3>
+                    <p>¿Estás seguro que deseas eliminar este monedero?<br>El saldo será devuelto a la cuenta principal.</p>
+                    <div class="botones">
+                        <button type="button" class="cancelar" id="cancelarEliminarMonedero">Cancelar</button>
+                        <button type="button" class="confirmar" id="confirmarEliminarMonedero">Confirmar</button>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <section class="analysis-card">
+            <h2>Visualización del Grafo de Transacciones entre Monederos</h2>
+            <div id="networkGraph" style="width: 100%; height: 500px; border: 1px solid lightgray; background-color: white;"></div>
+        </section>
+
+        <section class="analysis-card">
+            <h2>Estadísticas de Transacciones</h2>
+            <h3>Monederos con Más Transferencias</h3>
+            <ul id="topWallets" class="stats-list">
+                <li>No hay datos disponibles.</li>
+            </ul>
+
+            <h3>Rutas de Transferencia Más Frecuentes</h3>
+            <ul id="topPaths" class="stats-list">
+                <li>No hay datos disponibles.</li>
+            </ul>
         </section>
     </main>
 
@@ -61,6 +118,7 @@
         <p>© 2025 Monedero Virtual - Todos los derechos reservados.</p>
     </footer>
 
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
     <script type="module" src="../js/ui/logout.js"></script>
     <script type="module" src="../js/ui/monederoUI.js"></script>
     <script type="module" src="../js/ui/notification-indicator.js"></script>

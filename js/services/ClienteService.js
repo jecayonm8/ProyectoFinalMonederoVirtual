@@ -3,6 +3,7 @@ import Storage from "../../database/storage.js";
 import Cliente from "../models/Cliente.js";
 import Monedero from "../models/Monedero.js";
 import { PilaTransacciones } from "../models/Transaccion.js";
+import grafoTransaccionesService from "./GrafoTransaccionesService.js";
 import ColaPrioridad from "../dataStructures/ColaPrioridad.js";
 import ListaCircular from "../dataStructures/ListaCircular.js";
 import NotificacionService from "./NotificacionService.js";
@@ -122,8 +123,11 @@ class ClienteService {
 
     static actualizarPuntosPorTransaccion(idCliente, transaccion) {
         const cliente = ClienteService.obtenerClienteActual(); // Obtener la instancia en memoria
-        if (cliente && cliente.id === idCliente) {
-            // Modificar la instancia en memoria
+        let clienteActualizado = null;
+        
+        // Función auxiliar para actualizar puntos
+        const actualizarPuntos = (clienteObj) => {
+            // Puntos base según el tipo de transacción
             let puntosBase = 0;
             if (transaccion.tipo === "deposito") {
                 puntosBase = Math.floor(transaccion.monto / 100) * 1;
@@ -133,47 +137,66 @@ class ClienteService {
                 puntosBase = Math.floor(transaccion.monto / 100) * 3;
             }
             
-            // Aplicar multiplicador por rango
-            const multiplicador = ClienteService.obtenerMultiplicadorPuntosPorRango(cliente.rango);
+            // Guardar el rango actual para comparar después
+            const rangoAnterior = clienteObj.rango || 'Bronce';
+            
+            // Aplicar multiplicador por rango exactamente como en la imagen
+            const multiplicador = ClienteService.obtenerMultiplicadorPuntosPorRango(rangoAnterior);
             const puntosFinales = Math.floor(puntosBase * multiplicador);
-            const nuevosPuntosTotales = cliente.puntos + puntosFinales;
+            const nuevosPuntosTotales = clienteObj.puntos + puntosFinales;
             
-            // Actualizar puntos en el cliente y en el árbol AVL
-            cliente.puntos = nuevosPuntosTotales;
+            // Actualizar puntos en el cliente
+            clienteObj.puntos = nuevosPuntosTotales;
             
-            // Usar RangosService para actualizar el rango y el cliente en el árbol AVL
-            cliente.rango = rangosService.determinarRango(nuevosPuntosTotales);
-            rangosService.actualizarPuntosCliente(cliente.id, nuevosPuntosTotales);
+            // Determinar nuevo rango
+            const rangoNuevo = rangosService.determinarRango(nuevosPuntosTotales);
+            clienteObj.rango = rangoNuevo;
             
+            // Actualizar en el árbol AVL
+            rangosService.actualizarPuntosCliente(clienteObj.id, nuevosPuntosTotales);
+            
+            // Verificar si hubo cambio de rango para notificar
+            if (rangoAnterior !== rangoNuevo) {
+                // El cliente subió de rango - enviar notificación
+                let beneficiosTexto = '';
+                
+                switch(rangoNuevo) {
+                    case 'Plata':
+                        beneficiosTexto = '¡Obtienes un 10% extra de puntos (1.1x)!';
+                        break;
+                    case 'Oro':
+                        beneficiosTexto = '¡Obtienes un 25% extra de puntos (1.25x) y 10% descuento en canjes!';
+                        break;
+                    case 'Platino':
+                        beneficiosTexto = '¡Obtienes un 50% extra de puntos (1.5x) y 20% descuento en canjes!';
+                        break;
+                }
+                
+                const mensajeRango = `¡Felicidades! Has subido al rango ${rangoNuevo}. ${beneficiosTexto}`;
+                NotificacionService.agregarNotificacion(clienteObj.id, new Notificacion(mensajeRango, 'importante', null));
+            }
+            
+            // Notificar sobre los puntos ganados con el multiplicador aplicado
+            const mensajePuntos = `Has ganado ${puntosFinales} puntos ${multiplicador !== 1 ? `(${puntosBase} base × ${multiplicador} por tu rango ${rangoAnterior})` : ''} por tu ${transaccion.tipo}.`;
+            NotificacionService.agregarNotificacion(clienteObj.id, new Notificacion(mensajePuntos, 'informativo', transaccion.id));
+            
+            return clienteObj;
+        };
+        
+        // Procesar el cliente actual si coincide con el ID
+        if (cliente && cliente.id === idCliente) {
+            clienteActualizado = actualizarPuntos(cliente);
             // Guardar cambios
             ClienteService.guardarClienteActualEnLocalStorage();
         } else {
             // Si es otro cliente, buscarlo y actualizarlo directamente en Storage
             const otroCliente = Storage.buscarCliente(idCliente);
             if (otroCliente) {
-                let puntosBase = 0;
-                if (transaccion.tipo === "deposito") {
-                    puntosBase = Math.floor(transaccion.monto / 100) * 1;
-                } else if (transaccion.tipo === "retiro") {
-                    puntosBase = Math.floor(transaccion.monto / 100) * 2;
-                } else if (transaccion.tipo === "transferencia") {
-                    puntosBase = Math.floor(transaccion.monto / 100) * 3;
-                }
+                clienteActualizado = actualizarPuntos(otroCliente);
                 
-                // Aplicar multiplicador por rango
-                const multiplicador = ClienteService.obtenerMultiplicadorPuntosPorRango(otroCliente.rango);
-                const puntosFinales = Math.floor(puntosBase * multiplicador);
-                const nuevosPuntosTotales = otroCliente.puntos + puntosFinales;
-                
-                // Actualizar puntos en el cliente y en el árbol AVL
-                otroCliente.puntos = nuevosPuntosTotales;
-                
-                // Usar RangosService para actualizar el rango y el cliente en el árbol AVL
-                otroCliente.rango = rangosService.determinarRango(nuevosPuntosTotales);
-                rangosService.actualizarPuntosCliente(otroCliente.id, nuevosPuntosTotales);
-                
+                // Ya actualizamos el rango y los puntos en actualizarPuntos
                 // Guardar cambios
-                Storage.actualizarCliente(otroCliente);
+                Storage.actualizarCliente(clienteActualizado);
             }
         }
     }
@@ -199,34 +222,51 @@ class ClienteService {
             cliente = clienteDesdeStorage; // Usar el cliente obtenido del Storage
         }
 
-        let puntosCalculados = 0;
+        let puntosBase = 0;
         cliente.historialTransacciones.forEach(transaccion => {
             if (transaccion.tipo === "deposito") {
-                puntosCalculados += Math.floor(transaccion.monto / 100) * 1;
+                puntosBase += Math.floor(transaccion.monto / 100) * 1;
             } else if (transaccion.tipo === "retiro") {
-                puntosCalculados += Math.floor(transaccion.monto / 100) * 2;
+                puntosBase += Math.floor(transaccion.monto / 100) * 2;
             } else if (transaccion.tipo === "transferencia") {
-                puntosCalculados += Math.floor(transaccion.monto / 100) * 3;
+                puntosBase += Math.floor(transaccion.monto / 100) * 3;
             }
         });
         
-        // Actualizar puntos y rango en el cliente
-        cliente.puntos = puntosCalculados;
+        // Determinar rango con los puntos base
+        const rangoActual = rangosService.determinarRango(puntosBase);
         
-        // Usar RangosService para determinar el rango y actualizar en el árbol AVL
-        cliente.rango = rangosService.determinarRango(puntosCalculados);
-        rangosService.actualizarPuntosCliente(cliente.id, puntosCalculados);
+        // Aplicar multiplicador según el rango (como se muestra en la imagen)
+        const multiplicador = ClienteService.obtenerMultiplicadorPuntosPorRango(rangoActual);
+        const puntosFinales = Math.floor(puntosBase * multiplicador);
+        
+        // Puede que el cliente suba de rango después de aplicar el multiplicador
+        const rangoFinal = rangosService.determinarRango(puntosFinales);
+        
+        // Actualizar puntos y rango en el cliente
+        cliente.puntos = puntosFinales;
+        cliente.rango = rangoFinal;
+        
+        // Actualizar en el árbol AVL
+        rangosService.actualizarPuntosCliente(cliente.id, puntosFinales);
         
         // Guardar los cambios
-        ClienteService.guardarClienteActualEnLocalStorage();
+        Storage.actualizarCliente(cliente);
+        if (cliente.id === ClienteService.obtenerClienteActual()?.id) {
+            ClienteService.guardarClienteActualEnLocalStorage();
+        }
+        
+        console.log(`Cliente ${cliente.id}: ${puntosBase} puntos base * ${multiplicador} (${rangoActual}) = ${puntosFinales} puntos finales (${rangoFinal})`);
+        return cliente;
     }
 
     static obtenerMultiplicadorPuntosPorRango(rango) {
+        // Usar los valores exactos de la imagen para los multiplicadores
         switch (rango) {
-            case 'Bronce': return 1.0;
-            case 'Plata': return 1.1;
-            case 'Oro': return 1.25;
-            case 'Platino': return 1.5;
+            case 'Bronce': return 1.0;  // 1.0x puntos
+            case 'Plata': return 1.1;   // 1.1x puntos (10% más)
+            case 'Oro': return 1.25;    // 1.25x puntos (25% más)
+            case 'Platino': return 1.5; // 1.5x puntos (50% más)
             default: return 1.0;
         }
     }
@@ -287,6 +327,42 @@ class ClienteService {
             return resultado;
         });
     }
+    
+    static cancelarBeneficioActivo(idBeneficio) {
+        const cliente = ClienteService.obtenerClienteActual();
+        if (!cliente) {
+            return { exito: false, mensaje: 'No hay cliente logueado.' };
+        }
+        
+        if (!cliente.beneficiosActivos || !Array.isArray(cliente.beneficiosActivos)) {
+            return { exito: false, mensaje: 'No hay beneficios activos.' };
+        }
+        
+        // Buscar el beneficio por su ID
+        const beneficioIndex = cliente.beneficiosActivos.findIndex(b => b.id === idBeneficio);
+        
+        if (beneficioIndex === -1) {
+            return { exito: false, mensaje: 'Beneficio no encontrado.' };
+        }
+        
+        const beneficio = cliente.beneficiosActivos[beneficioIndex];
+        
+        // Verificar si el beneficio es cancelable
+        if (beneficio.cancelable === false) {
+            return { exito: false, mensaje: 'Este beneficio no se puede cancelar.' };
+        }
+        
+        // Eliminar el beneficio de los activos
+        cliente.beneficiosActivos.splice(beneficioIndex, 1);
+        
+        // Guardar los cambios
+        ClienteService.guardarClienteActualEnLocalStorage();
+        
+        return { 
+            exito: true, 
+            mensaje: `Beneficio "${beneficio.nombre}" cancelado correctamente.` 
+        };
+    }
 
 
 
@@ -296,7 +372,9 @@ static guardarCliente(cliente) {
 
 static crearMonederoParaCliente(idCliente, nombre, tipo, montoInicial = 0) {
     const cliente = Storage.buscarCliente(idCliente);
-    if (!cliente) return { exito: false, mensaje: "Cliente no encontrado." };
+    if (!cliente) {
+        return { exito: false, mensaje: "Cliente no encontrado." };
+    }
 
     // Validar que no exista un monedero igual
     if (cliente.monederos.some(m => m.nombre === nombre && m.tipo === tipo)) {
@@ -312,6 +390,9 @@ static crearMonederoParaCliente(idCliente, nombre, tipo, montoInicial = 0) {
     monedero.saldo = montoInicial;
     cliente.saldo -= montoInicial;
     cliente.monederos.push(monedero);
+    
+    // Generar notificación de creación de monedero
+    NotificacionService.notificarOperacionMonedero(idCliente, nombre, 'creacion', montoInicial);
 
     ClienteService.guardarCliente(cliente);
     return { exito: true, monedero };
@@ -329,6 +410,23 @@ static transferirEntreMonederos(idCliente, idOrigen, idDestino, monto) {
 
     origen.saldo -= monto;
     destino.saldo += monto;
+    
+    // Generar notificación de transferencia entre monederos
+    const idOperacion = `transfer-monedero-${Date.now()}`;
+    NotificacionService.notificarOperacionMonedero(idCliente, origen.nombre, 'transferencia', monto, destino.nombre, idOperacion);
+    
+    // Verificar si el saldo del monedero origen quedó bajo
+    NotificacionService.alertaSaldoBajoMonedero(idCliente, origen.id, origen.nombre);
+    
+    // Actualizar el grafo de transacciones para mostrar la relación entre monederos
+    try {
+        // Añadir la transferencia al grafo
+        grafoTransaccionesService.añadirTransferenciaEntreMonederos(idCliente, idOrigen, idDestino, monto);
+        console.log(`Transferencia añadida al grafo: ${idCliente}-${idOrigen} -> ${idCliente}-${idDestino} ($${monto})`);
+    } catch (error) {
+        console.error("Error al añadir la transferencia al grafo:", error);
+    }
+    
     ClienteService.guardarCliente(cliente); 
     return { exito: true, mensaje: `Transferencia exitosa de ${monto} de ${origen.nombre} a ${destino.nombre}` };
 }
@@ -343,6 +441,13 @@ static agregarSaldoAMonedero(idCliente, idMonedero, monto) {
 
     cliente.saldo -= monto;
     monedero.saldo += monto;
+    
+    // Generar notificación de depósito en monedero
+    NotificacionService.notificarOperacionMonedero(idCliente, monedero.nombre, 'deposito', monto);
+    
+    // Verificar si el saldo de la cuenta principal quedó bajo
+    NotificacionService.generarAlertaSaldoBajo(idCliente);
+    
     ClienteService.guardarCliente(cliente);
     return { exito: true, mensaje: "Saldo agregado correctamente." };
 }
@@ -357,6 +462,13 @@ static retirarSaldoDeMonedero(idCliente, idMonedero, monto) {
 
     monedero.saldo -= monto;
     cliente.saldo += monto;
+    
+    // Generar notificación de retiro de monedero
+    NotificacionService.notificarOperacionMonedero(idCliente, monedero.nombre, 'retiro', monto);
+    
+    // Verificar si el saldo del monedero quedó bajo
+    NotificacionService.alertaSaldoBajoMonedero(idCliente, monedero.id, monedero.nombre);
+    
     ClienteService.guardarCliente(cliente);
     return { exito: true, mensaje: "Saldo retirado correctamente." };
 }
@@ -369,8 +481,12 @@ static eliminarMonedero(idCliente, idMonedero) {
 
     // Devuelve el saldo del monedero eliminado a la cuenta principal
     const saldoADevolver = cliente.monederos[index].saldo;
+    const nombreMonedero = cliente.monederos[index].nombre;
     cliente.saldo += saldoADevolver;
     cliente.monederos.splice(index, 1);
+    
+    // Generar notificación de eliminación de monedero
+    NotificacionService.notificarOperacionMonedero(idCliente, nombreMonedero, 'eliminacion', saldoADevolver);
 
     ClienteService.guardarCliente(cliente);
     return { exito: true, mensaje: "Monedero eliminado y saldo devuelto a la cuenta principal." };

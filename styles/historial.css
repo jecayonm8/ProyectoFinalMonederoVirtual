@@ -99,6 +99,30 @@
     transition: background-color 0.3s ease;
 }
 
+/* Estilos para botones de cancelar transacciones */
+.btn-cancelar-transaccion {
+    background-color: #ff9800;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+}
+
+.btn-cancelar-transaccion:hover {
+    background-color: #f57c00;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.no-cancelable {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.85rem;
+    font-style: italic;
+}
+
 #historialTable .no-transactions-message {
     text-align: center;
     font-style: italic;

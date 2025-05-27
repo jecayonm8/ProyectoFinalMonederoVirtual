@@ -158,7 +158,7 @@ class ArbolAVL {
     }
 
     // Actualizar los puntos de un cliente existente
-    actualizarPuntos(id, nuevosPuntos) {
+    actualizarPuntos(id, nuevosPuntos, rangoExplicito = null) {
         // Buscar y eliminar el cliente actual
         const cliente = this.buscarPorId(id);
         if (!cliente) {
@@ -167,9 +167,17 @@ class ArbolAVL {
 
         this.eliminar(id);
         
-        // Actualizar puntos y reinsertar
+        // Actualizar puntos y rango
         cliente.puntos = nuevosPuntos;
-        cliente.rango = this.determinarRango(nuevosPuntos);
+        
+        // Si se proporciona un rango explícito, usarlo en lugar de calcularlo
+        if (rangoExplicito) {
+            cliente.rango = rangoExplicito;
+        } else {
+            cliente.rango = this.determinarRango(nuevosPuntos);
+        }
+        
+        // Reinsertar cliente actualizado
         this.insertar(cliente);
         return true;
     }

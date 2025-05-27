@@ -1,0 +1,258 @@
+/* Heredamos estilos base del dashboard */
+@import url('dashboards.css');
+
+/* Estilos específicos para la página de grafos de transacciones */
+
+/* Tarjeta de opciones del grafo */
+.graph-options-card {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    margin-bottom: 2rem;
+    width: 90%;
+    max-width: 1000px;
+}
+
+.graph-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.5rem;
+}
+
+.option-group {
+    display: flex;
+    flex-direction: column;
+    min-width: 200px;
+}
+
+.option-group label {
+    font-size: 1rem;
+    color: #fff;
+    margin-bottom: 0.5rem;
+}
+
+.option-group select,
+.option-group input {
+    padding: 0.75rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 1rem;
+}
+
+.option-group select {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1em;
+    padding-right: 2.5rem;
+}
+
+.option-group input[type="range"] {
+    height: 10px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 5px;
+    outline: none;
+    padding: 0;
+}
+
+.option-group input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4CAF50, #8BC34A);
+    cursor: pointer;
+}
+
+.option-group input[type="range"]::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4CAF50, #8BC34A);
+    cursor: pointer;
+}
+
+.option-group span {
+    color: #fff;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    text-align: center;
+}
+
+.action-button {
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #4CAF50, #8BC34A);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+}
+
+.action-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 7px 15px rgba(76, 175, 80, 0.4);
+}
+
+.action-button:active {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(76, 175, 80, 0.3);
+}
+
+/* Tarjeta de visualización del grafo */
+.graph-visualization-card {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    margin-bottom: 2rem;
+    width: 90%;
+    max-width: 1000px;
+}
+
+.graph-container {
+    width: 100%;
+    height: 600px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    margin-top: 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Estilos para el SVG del grafo */
+.node {
+    cursor: pointer;
+}
+
+.node circle {
+    fill: #4CAF50;
+    stroke: #fff;
+    stroke-width: 2px;
+    transition: all 0.3s ease;
+}
+
+.node:hover circle {
+    fill: #FFC107;
+    stroke-width: 3px;
+    r: 12; /* Aumentar el radio cuando se hace hover */
+}
+
+.node text {
+    fill: #fff;
+    font-size: 12px;
+    text-anchor: middle;
+    pointer-events: none;
+    text-shadow: 0px 0px 3px rgba(0, 0, 0, 0.7);
+}
+
+.link {
+    stroke: rgba(255, 255, 255, 0.5);
+    stroke-opacity: 0.6;
+}
+
+.link:hover {
+    stroke: #FFC107;
+    stroke-opacity: 0.8;
+}
+
+/* Tarjeta de estadísticas del grafo */
+.graph-stats-card {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    margin-bottom: 2rem;
+    width: 90%;
+    max-width: 1000px;
+}
+
+.stats-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    margin-top: 1.5rem;
+}
+
+.stats-group {
+    flex: 1;
+    min-width: 300px;
+}
+
+.stats-group h3 {
+    font-size: 1.3rem;
+    color: #fff;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    padding-bottom: 0.5rem;
+}
+
+.stats-list {
+    list-style: none;
+    padding: 0;
+}
+
+.stats-list li {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 1rem;
+    border-radius: 10px;
+    margin-bottom: 0.5rem;
+    color: #e0e0e0;
+    font-size: 0.9rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stats-list li span.amount {
+    font-weight: bold;
+    color: #4CAF50;
+    padding: 0.3rem 0.8rem;
+    background: rgba(76, 175, 80, 0.15);
+    border-radius: 15px;
+}
+
+/* Tooltip para información del grafo */
+.tooltip {
+    position: absolute;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    border-radius: 6px;
+    pointer-events: none;
+    font-size: 12px;
+    z-index: 10;
+    max-width: 200px;
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+    .graph-options {
+        flex-direction: column;
+    }
+    
+    .option-group {
+        width: 100%;
+    }
+    
+    .graph-container {
+        height: 400px;
+    }
+    
+    .stats-group {
+        width: 100%;
+    }
+}

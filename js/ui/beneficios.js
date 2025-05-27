@@ -1,5 +1,6 @@
 import ClienteService from "../services/ClienteService.js";
 import SistemaPuntos from "../models/SistemaPuntos.js";
+import Storage from "../../database/storage.js";
 
 document.addEventListener("DOMContentLoaded", () => {
     // Elementos del DOM
@@ -80,30 +81,76 @@ document.addEventListener("DOMContentLoaded", () => {
      */
     function actualizarProgresoRango(cliente) {
         const puntos = cliente.puntos;
+        const rango = cliente.rango || 'Bronce';
         let porcentaje = 0;
         let siguienteRango = "";
         
-        // Calcular porcentaje según el rango actual
-        if (cliente.rango === "Bronce") {
-            porcentaje = Math.min((puntos / 500) * 100, 100);
-            siguienteRango = "Plata";
-        } else if (cliente.rango === "Plata") {
-            porcentaje = Math.min(((puntos - 500) / 500) * 100, 100);
-            siguienteRango = "Oro";
-        } else if (cliente.rango === "Oro") {
-            porcentaje = Math.min(((puntos - 1000) / 4000) * 100, 100);
-            siguienteRango = "Platino";
-        } else {
+        // Verificar si ya tenemos un progreso máximo guardado para este cliente
+        if (!cliente.progresoMaximo) {
+            cliente.progresoMaximo = {};
+        }
+        
+        // Calcular porcentaje basado en el rango (que nunca disminuye)
+        if (rango === "Platino") {
             // Si ya es Platino, mostrar 100%
             porcentaje = 100;
             siguienteRango = "Máximo";
+            cliente.progresoMaximo['Platino'] = 100;
+        } else if (rango === "Oro") {
+            // Si es Oro, mostrar progreso hacia Platino
+            const puntosFaltantes = Math.max(0, 5000 - puntos);
+            const rangoTotal = 5000 - 1000;
+            const nuevoPorcentaje = 75 + (25 * (1 - (puntosFaltantes / rangoTotal)));
+            
+            // Usar el máximo porcentaje alcanzado para este rango
+            if (!cliente.progresoMaximo['Oro'] || nuevoPorcentaje > cliente.progresoMaximo['Oro']) {
+                cliente.progresoMaximo['Oro'] = nuevoPorcentaje;
+            }
+            
+            porcentaje = cliente.progresoMaximo['Oro'];
+            // Limitar a 99% si aún no ha alcanzado Platino
+            porcentaje = Math.min(porcentaje, 99);
+            siguienteRango = "Platino";
+        } else if (rango === "Plata") {
+            // Si es Plata, mostrar progreso hacia Oro
+            const puntosFaltantes = Math.max(0, 1000 - puntos);
+            const rangoTotal = 1000 - 500;
+            const nuevoPorcentaje = 50 + (25 * (1 - (puntosFaltantes / rangoTotal)));
+            
+            // Usar el máximo porcentaje alcanzado para este rango
+            if (!cliente.progresoMaximo['Plata'] || nuevoPorcentaje > cliente.progresoMaximo['Plata']) {
+                cliente.progresoMaximo['Plata'] = nuevoPorcentaje;
+            }
+            
+            porcentaje = cliente.progresoMaximo['Plata'];
+            // Limitar a 74% si aún no ha alcanzado Oro
+            porcentaje = Math.min(porcentaje, 74);
+            siguienteRango = "Oro";
+        } else {
+            // Si es Bronce, mostrar progreso hacia Plata
+            const nuevoPorcentaje = Math.min((puntos / 500) * 50, 49);
+            
+            // Usar el máximo porcentaje alcanzado para este rango
+            if (!cliente.progresoMaximo['Bronce'] || nuevoPorcentaje > cliente.progresoMaximo['Bronce']) {
+                cliente.progresoMaximo['Bronce'] = nuevoPorcentaje;
+            }
+            
+            porcentaje = cliente.progresoMaximo['Bronce'];
+            siguienteRango = "Plata";
         }
+        
+        // Guardar cambios del cliente para mantener el progreso máximo
+        ClienteService.guardarClienteActualEnLocalStorage();
+        Storage.actualizarCliente(cliente);
+        
+        // Asegurar que el porcentaje sea siempre positivo y no mayor a 100
+        porcentaje = Math.max(0, Math.min(porcentaje, 100));
         
         // Actualizar la barra de progreso
         progresoRangoDiv.style.width = `${porcentaje}%`;
         
         // Actualizar el texto de progreso
-        if (cliente.rango !== "Platino") {
+        if (rango !== "Platino") {
             progresoTextoSpan.textContent = `${Math.round(porcentaje)}% hacia ${siguienteRango}`;
         } else {
             progresoTextoSpan.textContent = "¡Has alcanzado el rango máximo!";
@@ -181,11 +228,24 @@ document.addEventListener("DOMContentLoaded", () => {
         let html = '<div class="active-benefits-list">';
         
         cliente.beneficiosActivos.forEach(beneficio => {
+            const fechaExpiracion = beneficio.fechaExpiracion ? 
+                new Date(beneficio.fechaExpiracion).toLocaleDateString() : 'No expira';
+            
+            // Si el beneficio tiene un tipo 'bono_saldo', no mostramos el botón de cancelar
+            // ya que estos beneficios se aplican inmediatamente
+            const esBeneficioCancelable = beneficio.tipo !== 'bono_saldo';
+                
             html += `
-                <div class="active-benefit-item">
+                <div class="active-benefit-item" id="beneficio-${beneficio.id || Date.now()}">
                     <h5>${beneficio.nombre}</h5>
-                    <p>Usos restantes: ${beneficio.usosRestantes}</p>
+                    ${beneficio.usosRestantes ? 
+                        `<p>Usos restantes: ${beneficio.usosRestantes}</p>` : 
+                        `<p>Duración: ${fechaExpiracion}</p>`
+                    }
                     <p class="benefit-date">Canjeado: ${new Date(beneficio.fechaCanje).toLocaleDateString()}</p>
+                    ${esBeneficioCancelable ? 
+                        `<button class="cancel-benefit-btn" onclick="cancelarBeneficioActivo('${beneficio.id || beneficio.nombre.replace(/\s+/g, '_').toLowerCase()}')">Cancelar beneficio</button>` : 
+                        '<p class="no-cancel-note">Este beneficio no se puede cancelar.</p>'}
                 </div>
             `;
         });
@@ -222,29 +282,64 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        const resultado = sistemaPuntos.canjearPuntos(cliente, beneficioId);
-        
-        if (resultado.exito) {
-            alert(resultado.mensaje);
-            
-            // Agregar al historial de canjes
-            if (!cliente.historialCanjes) {
-                cliente.historialCanjes = [];
+        try {
+            const sistemaPuntos = new SistemaPuntos();
+            const resultado = await sistemaPuntos.canjearPuntos(cliente, beneficioId);
+
+            if (resultado.exito) {
+                // Guardar cambios en el almacenamiento para que persistan
+                Storage.actualizarCliente(cliente);
+                Storage.guardarDatos();
+                ClienteService.guardarClienteActualEnLocalStorage();
+                
+                alert(resultado.mensaje);
+                
+                // Actualizar puntos y beneficios en la interfaz
+                cargarInformacionCliente();
+                await cargarBeneficiosDisponibles();
+                cargarBeneficiosActivos();
+            } else {
+                alert(resultado.mensaje);
             }
-            cliente.historialCanjes.push({
-                beneficioId,
-                fecha: new Date().toISOString(),
-                nombre: resultado.beneficio.nombre
-            });
+        } catch (error) {
+            console.error('Error al canjear beneficio:', error);
+            alert('Error al canjear el beneficio. Por favor, inténtalo de nuevo.');
+        }
+    };
+    
+    // Función global para cancelar beneficios activos
+    window.cancelarBeneficioActivo = function(beneficioId) {
+        if (!confirm('¿Estás seguro de que deseas cancelar este beneficio? Esta acción no se puede deshacer.')) {
+            return;
+        }
+        
+        try {
+            const cliente = ClienteService.obtenerClienteActual();
+            if (!cliente) {
+                alert('Error: No hay cliente logueado.');
+                return;
+            }
             
-            ClienteService.guardarClienteActualEnLocalStorage();
+            const resultado = ClienteService.cancelarBeneficioActivo(beneficioId);
             
-            // Actualizar la interfaz
-            cargarInformacionCliente();
-            await cargarBeneficiosDisponibles();
-            cargarBeneficiosActivos();
-        } else {
-            alert('Error: ' + resultado.mensaje);
+            if (resultado.exito) {
+                // Guardar cambios en el almacenamiento para que persistan
+                Storage.actualizarCliente(cliente);
+                Storage.guardarDatos();
+                ClienteService.guardarClienteActualEnLocalStorage();
+                
+                alert(resultado.mensaje);
+                // Actualizar la lista de beneficios activos
+                cargarBeneficiosActivos();
+                
+                // También actualizamos la información del cliente y beneficios disponibles
+                cargarInformacionCliente();
+            } else {
+                alert(resultado.mensaje || 'No se pudo cancelar el beneficio.');
+            }
+        } catch (error) {
+            console.error('Error al cancelar beneficio:', error);
+            alert('Error al cancelar el beneficio. Por favor, inténtalo de nuevo.');
         }
     };
 

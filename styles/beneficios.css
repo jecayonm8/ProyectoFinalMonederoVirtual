@@ -328,6 +328,41 @@
     margin-right: 5px;
 }
 
+/* Estilo para el botón de cancelar beneficio */
+.cancel-benefit-btn {
+    display: block;
+    width: 100%;
+    padding: 10px 15px;
+    background: linear-gradient(135deg, #f44336, #d32f2f);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(211, 47, 47, 0.3);
+    margin-top: 1rem;
+}
+
+.cancel-benefit-btn:hover {
+    background: linear-gradient(135deg, #d32f2f, #b71c1c);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(211, 47, 47, 0.4);
+}
+
+.cancel-benefit-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(211, 47, 47, 0.3);
+}
+
+.no-cancel-note {
+    color: #bbb;
+    font-style: italic;
+    margin-top: 1rem;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
 /* Responsividad */
 @media (max-width: 768px) {
     .filters {
