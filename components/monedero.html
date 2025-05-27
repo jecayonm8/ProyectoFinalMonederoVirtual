@@ -44,6 +44,16 @@
                 <button type="submit">Transferir</button>
             </form>
             <div id="listaMonederos"></div>
+
+            <div class="acciones-monedero">
+                <select id="monederoSeleccionado">
+                    <!-- Opciones de monederos se llenarán dinámicamente -->
+                </select>
+                <button id="btnAgregarSaldo" type="button">Agregar Saldo</button>
+                <button id="btnRetirarSaldo" type="button">Retirar Saldo</button>
+                <button id="btnEliminarMonedero" type="button">Eliminar Monedero</button>
+            </div>
+
         </section>
     </main>
 
@@ -52,7 +62,7 @@
     </footer>
 
     <script type="module" src="../js/ui/logout.js"></script>
-    <script type="module" src="../js/ui/monedero.js"></script>
+    <script type="module" src="../js/ui/monederoUI.js"></script>
     <script type="module" src="../js/ui/notification-indicator.js"></script>
 </body>
 </html>

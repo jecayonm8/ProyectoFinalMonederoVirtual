@@ -333,6 +333,49 @@ static transferirEntreMonederos(idCliente, idOrigen, idDestino, monto) {
     return { exito: true, mensaje: `Transferencia exitosa de ${monto} de ${origen.nombre} a ${destino.nombre}` };
 }
 
+static agregarSaldoAMonedero(idCliente, idMonedero, monto) {
+    const cliente = Storage.buscarCliente(idCliente);
+    if (!cliente) return { exito: false, mensaje: "Cliente no encontrado." };
+    const monedero = cliente.monederos.find(m => m.id === idMonedero);
+    if (!monedero) return { exito: false, mensaje: "Monedero no encontrado." };
+    if (monto <= 0) return { exito: false, mensaje: "Monto inválido." };
+    if (monto > cliente.saldo) return { exito: false, mensaje: "Saldo insuficiente en la cuenta principal." };
+
+    cliente.saldo -= monto;
+    monedero.saldo += monto;
+    ClienteService.guardarCliente(cliente);
+    return { exito: true, mensaje: "Saldo agregado correctamente." };
+}
+
+static retirarSaldoDeMonedero(idCliente, idMonedero, monto) {
+    const cliente = Storage.buscarCliente(idCliente);
+    if (!cliente) return { exito: false, mensaje: "Cliente no encontrado." };
+    const monedero = cliente.monederos.find(m => m.id === idMonedero);
+    if (!monedero) return { exito: false, mensaje: "Monedero no encontrado." };
+    if (monto <= 0) return { exito: false, mensaje: "Monto inválido." };
+    if (monto > monedero.saldo) return { exito: false, mensaje: "Saldo insuficiente en el monedero." };
+
+    monedero.saldo -= monto;
+    cliente.saldo += monto;
+    ClienteService.guardarCliente(cliente);
+    return { exito: true, mensaje: "Saldo retirado correctamente." };
+}
+
+static eliminarMonedero(idCliente, idMonedero) {
+    const cliente = Storage.buscarCliente(idCliente);
+    if (!cliente) return { exito: false, mensaje: "Cliente no encontrado." };
+    const index = cliente.monederos.findIndex(m => m.id === idMonedero);
+    if (index === -1) return { exito: false, mensaje: "Monedero no encontrado." };
+
+    // Devuelve el saldo del monedero eliminado a la cuenta principal
+    const saldoADevolver = cliente.monederos[index].saldo;
+    cliente.saldo += saldoADevolver;
+    cliente.monederos.splice(index, 1);
+
+    ClienteService.guardarCliente(cliente);
+    return { exito: true, mensaje: "Monedero eliminado y saldo devuelto a la cuenta principal." };
+}
+
 
     static obtenerTodosLosClientes() {
         return Storage.obtenerTodosLosClientes();
