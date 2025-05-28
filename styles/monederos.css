@@ -374,3 +374,38 @@ footer {
         flex-direction: column;
     }
 }
+
+/* filepath: [monederos.css](http://_vscodecontentref_/3) */
+/* ...existing code... */
+.acciones-monedero select,
+.acciones-monedero button {
+    padding: 12px 18px;
+    border-radius: 10px;
+    border: none;
+    margin: 0 8px 8px 0;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 8px rgba(33,150,243,0.08);
+}
+
+.acciones-monedero select {
+    background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+    color: #1565c0;
+    border: 1.5px solid #2196f3;
+}
+
+.acciones-monedero button {
+    background: linear-gradient(135deg, #2196f3, #4fc3f7);
+    color: #fff;
+    cursor: pointer;
+    border: 1.5px solid #1976d2;
+}
+
+.acciones-monedero button:hover {
+    background: linear-gradient(135deg, #1976d2, #2196f3);
+    color: #fff;
+    box-shadow: 0 4px 16px #2196f355;
+    transform: translateY(-2px) scale(1.04);
+}
+/* ...existing code... */
