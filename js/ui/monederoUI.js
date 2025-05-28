@@ -1,4 +1,3 @@
-import GrafoMonederos from "../dataStructures/grafoMonederos.js";
 import ClienteService from "../services/ClienteService.js";
 import grafoTransaccionesService from "../services/GrafoTransaccionesService.js";
 import Storage from "../../database/storage.js";
@@ -24,7 +23,6 @@ document.addEventListener("DOMContentLoaded", () => {
         monederoOrigen.innerHTML = "<option value=''>Origen</option>" + options;
         monederoDestino.innerHTML = "<option value=''>Destino</option>" + options;
         monederoSeleccionado.innerHTML = "<option value=''>Selecciona un monedero</option>" + options;
-<<<<<<< Updated upstream
         
         // Ocultar mensaje de operación al actualizar la interfaz
         ocultarMensaje();
@@ -50,58 +48,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Función para ocultar un formulario flotante
     function ocultarFormulario(form) {
         form.classList.remove("visible");
-=======
-
-        renderizarGrafoMonederos(clienteActual);
-    }
-
-    function renderizarGrafoMonederos(clienteActual) {
-        const container = document.getElementById("grafoMonederos");
-        if (!container) return;
-
-        // Suponiendo que guardas las transferencias en clienteActual.transferenciasMonederos
-        // Si no, usa el arreglo donde guardas las transferencias entre monederos
-        const grafo = new GrafoMonederos();
-        if (clienteActual.transferenciasMonederos) {
-            clienteActual.transferenciasMonederos.forEach(t => {
-                grafo.agregarTransferencia(t.origen, t.destino, t.monto);
-            });
-        }
-
-        const nodes = clienteActual.monederos.map(m => ({
-            id: m.id,
-            label: `${m.nombre}\n$${m.saldo.toFixed(2)}`,
-            shape: "box",
-            color: "#4d78c1",
-            font: { color: "#fff", size: 16 }
-        }));
-
-        const edges = [];
-        for (const [origen, destinos] of grafo.obtenerRelaciones()) {
-            for (const [destino, monto] of destinos) {
-                edges.push({
-                    from: origen,
-                    to: destino,
-                    label: `$${monto.toFixed(2)}`,
-                    arrows: "to",
-                    color: "#2196f3",
-                    font: { align: "middle" }
-                });
-            }
-        }
-
-        container.innerHTML = "";
-        if (nodes.length === 0) return;
-
-        const data = { nodes: new vis.DataSet(nodes), edges: new vis.DataSet(edges) };
-        const options = {
-            layout: { hierarchical: false },
-            nodes: { borderWidth: 2, shadow: true },
-            edges: { smooth: true, arrows: { to: { enabled: true } } },
-            physics: { enabled: true }
-        };
-        new vis.Network(container, data, options);
->>>>>>> Stashed changes
     }
 
     const saldoCuentaPrincipal = document.getElementById("saldoCuentaPrincipal");
