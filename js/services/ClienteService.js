@@ -1,14 +1,19 @@
-// js/services/ClienteService.js
 import Storage from "../../database/storage.js";
 import Cliente from "../models/Cliente.js";
 import Monedero from "../models/Monedero.js";
+<<<<<<< Updated upstream
 import { PilaTransacciones } from "../models/Transaccion.js";
 import grafoTransaccionesService from "./GrafoTransaccionesService.js";
 import ColaPrioridad from "../dataStructures/ColaPrioridad.js";
 import ListaCircular from "../dataStructures/ListaCircular.js";
 import NotificacionService from "./NotificacionService.js";
+=======
+>>>>>>> Stashed changes
 import Notificacion from "../models/Notificacion.js";
+import { PilaTransacciones } from "../models/Transaccion.js";
+import NotificacionService from "./NotificacionService.js";
 import rangosService from "./RangosService.js";
+
 
 let clienteActualEnMemoria = null; // Esta variable mantendrá la instancia rehidratada del cliente actual
 
@@ -118,7 +123,6 @@ class ClienteService {
             NotificacionService.agregarNotificacion(idCliente, new Notificacion(mensajeConfirmacion, 'informativo', transaccion.id));
         }
         return exito;
-
     }
 
     static actualizarPuntosPorTransaccion(idCliente, transaccion) {
@@ -364,6 +368,7 @@ class ClienteService {
         };
     }
 
+<<<<<<< Updated upstream
 
 
 static guardarCliente(cliente) {
@@ -379,13 +384,36 @@ static crearMonederoParaCliente(idCliente, nombre, tipo, montoInicial = 0) {
     // Validar que no exista un monedero igual
     if (cliente.monederos.some(m => m.nombre === nombre && m.tipo === tipo)) {
         return { exito: false, mensaje: "Ya existe un monedero con ese nombre y tipo." };
+=======
+    static guardarCliente(cliente) {
+        Storage.actualizarCliente(cliente);
+>>>>>>> Stashed changes
     }
 
-    // Validar saldo suficiente
-    if (montoInicial > cliente.saldo) {
-        return { exito: false, mensaje: "Saldo insuficiente en la cuenta principal." };
+    static crearMonederoParaCliente(idCliente, nombre, tipo, montoInicial = 0) {
+        const cliente = Storage.buscarCliente(idCliente);
+        if (!cliente) return { exito: false, mensaje: "Cliente no encontrado." };
+
+        // Validar que no exista un monedero igual
+        if (cliente.monederos.some(m => m.nombre === nombre && m.tipo === tipo)) {
+            return { exito: false, mensaje: "Ya existe un monedero con ese nombre y tipo." };
+        }
+
+        // Validar saldo suficiente
+        if (montoInicial > cliente.saldo) {
+            return { exito: false, mensaje: "Saldo insuficiente en la cuenta principal." };
+        }
+
+        const monedero = new Monedero(Date.now().toString(), nombre, tipo);
+        monedero.saldo = montoInicial;
+        cliente.saldo -= montoInicial;
+        cliente.monederos.push(monedero);
+
+        ClienteService.guardarCliente(cliente);
+        return { exito: true, monedero };
     }
 
+<<<<<<< Updated upstream
     const monedero = new Monedero(Date.now().toString(), nombre, tipo);
     monedero.saldo = montoInicial;
     cliente.saldo -= montoInicial;
@@ -393,21 +421,24 @@ static crearMonederoParaCliente(idCliente, nombre, tipo, montoInicial = 0) {
     
     // Generar notificación de creación de monedero
     NotificacionService.notificarOperacionMonedero(idCliente, nombre, 'creacion', montoInicial);
+=======
+    static transferirEntreMonederos(idCliente, idOrigen, idDestino, monto) {
+        const cliente = Storage.buscarCliente(idCliente);
+        if (!cliente) return { exito: false, mensaje: "Cliente no encontrado." };
+        if (idOrigen === idDestino) return { exito: false, mensaje: "No puedes transferir al mismo monedero." };
+>>>>>>> Stashed changes
 
-    ClienteService.guardarCliente(cliente);
-    return { exito: true, monedero };
-}
+        const monederoOrigen = cliente.monederos.find(m => m.id === idOrigen);
+        const monederoDestino = cliente.monederos.find(m => m.id === idDestino);
 
-static transferirEntreMonederos(idCliente, idOrigen, idDestino, monto) {
-    const cliente = Storage.buscarCliente(idCliente);
-    if (!cliente) return { exito: false, mensaje: "Cliente no encontrado." };
-    const origen = cliente.monederos.find(m => m.id === idOrigen);
-    const destino = cliente.monederos.find(m => m.id === idDestino);
+        if (!monederoOrigen || !monederoDestino) return { exito: false, mensaje: "Monedero no encontrado." };
+        if (monto <= 0) return { exito: false, mensaje: "Monto inválido." };
+        if (monto > monederoOrigen.saldo) return { exito: false, mensaje: "Saldo insuficiente en el monedero origen." };
 
-    if (!origen || !destino) return { exito: false, mensaje: "Monedero no encontrado." };
-    if (origen.id === destino.id) return { exito: false, mensaje: "No puede transferir al mismo monedero." };
-    if (monto <= 0 || monto > origen.saldo) return { exito: false, mensaje: "Monto inválido o saldo insuficiente." };
+        monederoOrigen.saldo -= monto;
+        monederoDestino.saldo += monto;
 
+<<<<<<< Updated upstream
     origen.saldo -= monto;
     destino.saldo += monto;
     
@@ -430,15 +461,22 @@ static transferirEntreMonederos(idCliente, idOrigen, idDestino, monto) {
     ClienteService.guardarCliente(cliente); 
     return { exito: true, mensaje: `Transferencia exitosa de ${monto} de ${origen.nombre} a ${destino.nombre}` };
 }
+=======
+        // Guardar historial de transferencias entre monederos para el grafo
+        if (!cliente.transferenciasMonederos) cliente.transferenciasMonederos = [];
+        cliente.transferenciasMonederos.push({
+            origen: idOrigen,
+            destino: idDestino,
+            monto: monto,
+            fecha: new Date().toISOString()
+        });
+>>>>>>> Stashed changes
 
-static agregarSaldoAMonedero(idCliente, idMonedero, monto) {
-    const cliente = Storage.buscarCliente(idCliente);
-    if (!cliente) return { exito: false, mensaje: "Cliente no encontrado." };
-    const monedero = cliente.monederos.find(m => m.id === idMonedero);
-    if (!monedero) return { exito: false, mensaje: "Monedero no encontrado." };
-    if (monto <= 0) return { exito: false, mensaje: "Monto inválido." };
-    if (monto > cliente.saldo) return { exito: false, mensaje: "Saldo insuficiente en la cuenta principal." };
+        ClienteService.guardarCliente(cliente);
+        return { exito: true, mensaje: "Transferencia realizada correctamente." };
+    }
 
+<<<<<<< Updated upstream
     cliente.saldo -= monto;
     monedero.saldo += monto;
     
@@ -451,15 +489,23 @@ static agregarSaldoAMonedero(idCliente, idMonedero, monto) {
     ClienteService.guardarCliente(cliente);
     return { exito: true, mensaje: "Saldo agregado correctamente." };
 }
+=======
+    static agregarSaldoAMonedero(idCliente, idMonedero, monto) {
+        const cliente = Storage.buscarCliente(idCliente);
+        if (!cliente) return { exito: false, mensaje: "Cliente no encontrado." };
+        const monedero = cliente.monederos.find(m => m.id === idMonedero);
+        if (!monedero) return { exito: false, mensaje: "Monedero no encontrado." };
+        if (monto <= 0) return { exito: false, mensaje: "Monto inválido." };
+        if (monto > cliente.saldo) return { exito: false, mensaje: "Saldo insuficiente en la cuenta principal." };
+>>>>>>> Stashed changes
 
-static retirarSaldoDeMonedero(idCliente, idMonedero, monto) {
-    const cliente = Storage.buscarCliente(idCliente);
-    if (!cliente) return { exito: false, mensaje: "Cliente no encontrado." };
-    const monedero = cliente.monederos.find(m => m.id === idMonedero);
-    if (!monedero) return { exito: false, mensaje: "Monedero no encontrado." };
-    if (monto <= 0) return { exito: false, mensaje: "Monto inválido." };
-    if (monto > monedero.saldo) return { exito: false, mensaje: "Saldo insuficiente en el monedero." };
+        cliente.saldo -= monto;
+        monedero.saldo += monto;
+        ClienteService.guardarCliente(cliente);
+        return { exito: true, mensaje: "Saldo agregado correctamente." };
+    }
 
+<<<<<<< Updated upstream
     monedero.saldo -= monto;
     cliente.saldo += monto;
     
@@ -472,13 +518,23 @@ static retirarSaldoDeMonedero(idCliente, idMonedero, monto) {
     ClienteService.guardarCliente(cliente);
     return { exito: true, mensaje: "Saldo retirado correctamente." };
 }
+=======
+    static retirarSaldoDeMonedero(idCliente, idMonedero, monto) {
+        const cliente = Storage.buscarCliente(idCliente);
+        if (!cliente) return { exito: false, mensaje: "Cliente no encontrado." };
+        const monedero = cliente.monederos.find(m => m.id === idMonedero);
+        if (!monedero) return { exito: false, mensaje: "Monedero no encontrado." };
+        if (monto <= 0) return { exito: false, mensaje: "Monto inválido." };
+        if (monto > monedero.saldo) return { exito: false, mensaje: "Saldo insuficiente en el monedero." };
+>>>>>>> Stashed changes
 
-static eliminarMonedero(idCliente, idMonedero) {
-    const cliente = Storage.buscarCliente(idCliente);
-    if (!cliente) return { exito: false, mensaje: "Cliente no encontrado." };
-    const index = cliente.monederos.findIndex(m => m.id === idMonedero);
-    if (index === -1) return { exito: false, mensaje: "Monedero no encontrado." };
+        monedero.saldo -= monto;
+        cliente.saldo += monto;
+        ClienteService.guardarCliente(cliente);
+        return { exito: true, mensaje: "Saldo retirado correctamente." };
+    }
 
+<<<<<<< Updated upstream
     // Devuelve el saldo del monedero eliminado a la cuenta principal
     const saldoADevolver = cliente.monederos[index].saldo;
     const nombreMonedero = cliente.monederos[index].nombre;
@@ -487,11 +543,22 @@ static eliminarMonedero(idCliente, idMonedero) {
     
     // Generar notificación de eliminación de monedero
     NotificacionService.notificarOperacionMonedero(idCliente, nombreMonedero, 'eliminacion', saldoADevolver);
+=======
+    static eliminarMonedero(idCliente, idMonedero) {
+        const cliente = Storage.buscarCliente(idCliente);
+        if (!cliente) return { exito: false, mensaje: "Cliente no encontrado." };
+        const index = cliente.monederos.findIndex(m => m.id === idMonedero);
+        if (index === -1) return { exito: false, mensaje: "Monedero no encontrado." };
+>>>>>>> Stashed changes
 
-    ClienteService.guardarCliente(cliente);
-    return { exito: true, mensaje: "Monedero eliminado y saldo devuelto a la cuenta principal." };
-}
+        // Devuelve el saldo del monedero eliminado a la cuenta principal
+        const saldoADevolver = cliente.monederos[index].saldo;
+        cliente.saldo += saldoADevolver;
+        cliente.monederos.splice(index, 1);
 
+        ClienteService.guardarCliente(cliente);
+        return { exito: true, mensaje: "Monedero eliminado y saldo devuelto a la cuenta principal." };
+    }
 
     static obtenerTodosLosClientes() {
         return Storage.obtenerTodosLosClientes();

@@ -25,6 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
         monederoDestino.innerHTML = "<option value=''>Destino</option>" + options;
         monederoSeleccionado.innerHTML = "<option value=''>Selecciona un monedero</option>" + options;
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         
         // Ocultar mensaje de operación al actualizar la interfaz
         ocultarMensaje();
@@ -51,6 +52,8 @@ document.addEventListener("DOMContentLoaded", () => {
     function ocultarFormulario(form) {
         form.classList.remove("visible");
 =======
+=======
+>>>>>>> Stashed changes
 
         renderizarGrafoMonederos(clienteActual);
     }
@@ -101,6 +104,9 @@ document.addEventListener("DOMContentLoaded", () => {
             physics: { enabled: true }
         };
         new vis.Network(container, data, options);
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     }
 

@@ -1,8 +1,8 @@
 // js/services/GrafoTransaccionesService.js
 
+import Storage from "../../database/storage.js";
 import GrafoDirigido from "../dataStructures/GrafoDirigido.js";
 import ClienteService from "./ClienteService.js";
-import Storage from "../../database/storage.js";
 
 /**
  * Servicio para gestionar un grafo dirigido de transacciones entre monederos.
