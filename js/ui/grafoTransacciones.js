@@ -425,15 +425,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     
     /**
-     * Muestra un mensaje cuando no hay datos para mostrar
+     * Prepara el contenedor del grafo cuando no hay datos para mostrar
      */
     function mostrarMensajeNoHayDatos() {
+        // Limpiar el contenedor sin mostrar mensaje
         graphContainer.innerHTML = `
-            <div class="no-data-message">
-                <h3>No hay datos para mostrar</h3>
-                <p>No se encontraron transacciones con los filtros seleccionados.</p>
-                <p>Intenta ajustar los filtros o realizar algunas transacciones.</p>
-            </div>
+            <div class="graph-empty-state"></div>
         `;
     }
     
@@ -448,10 +445,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const topCaminos = grafoTransaccionesService.obtenerCaminosMasFrecuentes(5);
         
         // Mostrar monederos con más transferencias
-        if (topMonederos.length === 0) {
-            topWalletsList.innerHTML = '<li>No hay datos disponibles</li>';
-        } else {
-            topWalletsList.innerHTML = '';
+        topWalletsList.innerHTML = '';
+        if (topMonederos.length > 0) {
             topMonederos.forEach(monedero => {
                 // Obtener detalles del monedero
                 let nombreMonedero = "Monedero " + monedero.monederoId;
@@ -483,10 +478,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         
         // Mostrar caminos más frecuentes
-        if (topCaminos.length === 0) {
-            topPathsList.innerHTML = '<li>No hay datos disponibles</li>';
-        } else {
-            topPathsList.innerHTML = '';
+        topPathsList.innerHTML = '';
+        if (topCaminos.length > 0) {
             topCaminos.forEach(camino => {
                 // Obtener detalles del origen
                 let origenMonedero = "Monedero " + camino.origenMonederoId;

@@ -205,6 +205,11 @@
     padding: 0;
 }
 
+/* Asegurarse de que las listas vacías no muestren ningún contenido */
+.stats-list:empty::before {
+    content: none;
+}
+
 .stats-list li {
     background: rgba(255, 255, 255, 0.1);
     padding: 1rem;
