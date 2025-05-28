@@ -1,3 +1,4 @@
+import GrafoMonederos from "../dataStructures/grafoMonederos.js";
 import ClienteService from "../services/ClienteService.js";
 import grafoTransaccionesService from "../services/GrafoTransaccionesService.js";
 import Storage from "../../database/storage.js";
@@ -23,11 +24,8 @@ document.addEventListener("DOMContentLoaded", () => {
         monederoOrigen.innerHTML = "<option value=''>Origen</option>" + options;
         monederoDestino.innerHTML = "<option value=''>Destino</option>" + options;
         monederoSeleccionado.innerHTML = "<option value=''>Selecciona un monedero</option>" + options;
-<<<<<<< HEAD
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
-=======
->>>>>>> 630ea44d186fad6c753ebe23613a45b5a75bc812
         
         // Ocultar mensaje de operación al actualizar la interfaz
         ocultarMensaje();
@@ -53,7 +51,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Función para ocultar un formulario flotante
     function ocultarFormulario(form) {
         form.classList.remove("visible");
-<<<<<<< HEAD
 =======
 =======
 >>>>>>> Stashed changes
@@ -111,8 +108,6 @@ document.addEventListener("DOMContentLoaded", () => {
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
-=======
->>>>>>> 630ea44d186fad6c753ebe23613a45b5a75bc812
     }
 
     const saldoCuentaPrincipal = document.getElementById("saldoCuentaPrincipal");
