@@ -475,7 +475,9 @@ document.addEventListener("DOMContentLoaded", () => {
         topWalletsList.innerHTML = ''; // Limpiar lista
         const topMonederos = grafoTransaccionesService.obtenerMonederosConMasTransferencias(5);
         
-        if (topMonederos.length > 0) {
+        if (topMonederos.length === 0) {
+            topWalletsList.innerHTML = '<li>No hay datos disponibles.</li>';
+        } else {
             topMonederos.forEach(monedero => {
                 // Obtener detalles del monedero
                 let nombreMonedero = "Monedero " + monedero.monederoId;
@@ -505,7 +507,9 @@ document.addEventListener("DOMContentLoaded", () => {
         topPathsList.innerHTML = ''; // Limpiar lista
         const topCaminos = grafoTransaccionesService.obtenerCaminosMasFrecuentes(5);
         
-        if (topCaminos.length > 0) {
+        if (topCaminos.length === 0) {
+            topPathsList.innerHTML = '<li>No hay datos disponibles.</li>';
+        } else {
             topCaminos.forEach(camino => {
                 // Obtener detalles del origen
                 let origenMonedero = "Monedero " + camino.origenMonederoId;
